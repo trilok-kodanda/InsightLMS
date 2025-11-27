@@ -1,0 +1,69 @@
+@startuml Course Management Use Cases
+
+!theme plain
+title Course Management Use Cases
+
+actor Student as s
+actor Admin as a
+actor Subscriber as sub
+
+package "Course Browsing" {
+    usecase "View All Courses" as UC1
+    usecase "View Course Details" as UC2
+    usecase "View Course Lectures" as UC3
+}
+
+package "Course Management (Admin)" {
+    usecase "Create Course" as UC4
+    usecase "Update Course" as UC5
+    usecase "Delete Course" as UC6
+    usecase "Upload Course Thumbnail" as UC7
+    usecase "Add Lecture to Course" as UC8
+    usecase "Update Lecture" as UC9
+    usecase "Delete Lecture" as UC10
+    usecase "Upload Lecture Video" as UC11
+}
+
+' Student connections
+s --> UC1 : Browse available courses (no auth required)
+s --> UC2 : View course information
+
+' Subscriber connections
+sub --> UC1 : Browse available courses
+sub --> UC2 : View course information  
+sub --> UC3 : Access course lectures (requires active subscription)
+
+' Admin connections
+a --> UC1 : Browse all courses
+a --> UC2 : View course details
+a --> UC3 : Access all course lectures
+a --> UC4 : Create new course with title, description, category
+a --> UC5 : Update course information
+a --> UC6 : Delete course and cleanup files
+a --> UC7 : Upload/update course thumbnail
+a --> UC8 : Add new lecture to course
+a --> UC9 : Update lecture content
+a --> UC10 : Delete lecture and video
+a --> UC11 : Upload lecture video files
+
+UC4 .> UC7 : includes
+UC5 .> UC7 : includes
+UC8 .> UC11 : includes
+UC9 .> UC11 : includes
+
+note right of UC1
+  Returns courses without lectures
+  No authentication required
+end note
+
+note right of UC3
+  Requires active subscription
+  Admin bypass for all lectures
+end note
+
+note right of UC4
+  Creates course with dummy thumbnail
+  Updates thumbnail if file provided
+end note
+
+@enduml

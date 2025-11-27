@@ -1,0 +1,66 @@
+@startuml Payment & Subscription Use Cases
+
+!theme plain
+title Payment & Subscription Use Cases
+
+actor User as u
+actor Admin as a
+actor Razorpay as r
+
+package "Subscription Management" {
+    usecase "Get Razorpay API Key" as UC1
+    usecase "Buy Subscription" as UC2
+    usecase "Verify Payment" as UC3
+    usecase "Cancel Subscription" as UC4
+    usecase "Process Refund" as UC5
+}
+
+package "Payment Analytics" {
+    usecase "View All Payments" as UC6
+    usecase "View Monthly Sales" as UC7
+    usecase "View Payment Statistics" as UC8
+}
+
+package "User Statistics" {
+    usecase "View User Stats" as UC9
+    usecase "View Subscriber Count" as UC10
+}
+
+' User connections
+u --> UC1 : Get payment gateway key
+u --> UC2 : Create subscription (monthly for 12 months)
+u --> UC3 : Verify payment signature
+u --> UC4 : Cancel active subscription
+u --> UC5 : Request refund within 14 days
+
+' Admin connections
+a --> UC6 : View all payment records
+a --> UC7 : View monthly sales data
+a --> UC8 : Analyze payment statistics
+a --> UC9 : View total user count
+a --> UC10 : View active subscriber count
+
+' Razorpay connections
+r --> UC2 : Process subscription creation
+r --> UC3 : Validate payment signature
+r --> UC4 : Handle subscription cancellation
+r --> UC5 : Process refund requests
+
+UC2 .> UC3 : extends
+UC4 .> UC5 : includes
+UC6 .> UC7 : includes
+UC6 .> UC8 : includes
+UC9 .> UC10 : includes
+
+note right of UC2
+  Prevents admin from buying subscription
+  Prevents duplicate active subscriptions
+  Creates 12-month recurring plan
+end note
+
+note right of UC5
+  Only within 14-day refund period
+  Deletes payment record on refund
+end note
+
+@enduml

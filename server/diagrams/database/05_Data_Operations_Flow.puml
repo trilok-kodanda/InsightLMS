@@ -1,0 +1,162 @@
+@startuml Data Operations Flow
+
+!theme plain
+title Learning Management System - Data Operations Flow
+
+package "User Operations" {
+    [User Registration] as UserReg
+    [User Login] as UserLogin
+    [Profile Update] as ProfileUpdate
+    [Password Reset] as PasswordReset
+    [Subscription Update] as SubUpdate
+}
+
+package "Course Operations" {
+    [Course Creation] as CourseCreate
+    [Course Update] as CourseUpdate
+    [Course Deletion] as CourseDelete
+    [Lecture Addition] as LectureAdd
+    [Lecture Update] as LectureUpdate
+    [Lecture Deletion] as LectureDelete
+}
+
+package "Payment Operations" {
+    [Payment Creation] as PaymentCreate
+    [Payment Verification] as PaymentVerify
+    [Subscription Management] as SubMgmt
+    [Refund Processing] as RefundProcess
+}
+
+package "Admin Operations" {
+    [Admin Request Creation] as AdminReqCreate
+    [Admin Request Review] as AdminReqReview
+    [User Role Update] as UserRoleUpdate
+}
+
+package "Database Operations" {
+    database "MongoDB" {
+        [User Collection] as UserDB
+        [Course Collection] as CourseDB
+        [Payment Collection] as PaymentDB
+        [AdminRequest Collection] as AdminDB
+    }
+}
+
+package "External Services" {
+    [Cloudinary] as Cloudinary
+    [Razorpay] as Razorpay
+    [Email Service] as EmailService
+}
+
+' User Operations Flow
+UserReg --> UserDB : CREATE user document
+UserReg --> Cloudinary : UPLOAD avatar (if provided)
+UserLogin --> UserDB : READ user by email
+UserLogin --> UserDB : COMPARE password hash
+ProfileUpdate --> UserDB : UPDATE user profile
+ProfileUpdate --> Cloudinary : UPDATE avatar
+PasswordReset --> UserDB : UPDATE reset token & expiry
+PasswordReset --> EmailService : SEND reset email
+SubUpdate --> UserDB : UPDATE subscription status
+
+' Course Operations Flow
+CourseCreate --> CourseDB : CREATE course document
+CourseCreate --> Cloudinary : UPLOAD thumbnail
+CourseUpdate --> CourseDB : UPDATE course document
+CourseUpdate --> Cloudinary : UPDATE thumbnail
+CourseDelete --> CourseDB : DELETE course document
+CourseDelete --> Cloudinary : DELETE thumbnail & lectures
+LectureAdd --> CourseDB : UPDATE course with new lecture
+LectureAdd --> Cloudinary : UPLOAD lecture video
+LectureUpdate --> CourseDB : UPDATE lecture in course
+LectureUpdate --> Cloudinary : UPDATE lecture video
+LectureDelete --> CourseDB : UPDATE course (remove lecture)
+LectureDelete --> Cloudinary : DELETE lecture video
+
+' Payment Operations Flow
+PaymentCreate --> PaymentDB : CREATE payment document
+PaymentCreate --> Razorpay : CREATE subscription
+PaymentVerify --> PaymentDB : READ payment by signature
+PaymentVerify --> Razorpay : VERIFY payment signature
+PaymentVerify --> UserDB : UPDATE user subscription status
+SubMgmt --> PaymentDB : READ subscription details
+SubMgmt --> Razorpay : MANAGE subscription
+RefundProcess --> PaymentDB : DELETE payment document
+RefundProcess --> Razorpay : PROCESS refund
+RefundProcess --> UserDB : UPDATE user subscription status
+
+' Admin Operations Flow
+AdminReqCreate --> AdminDB : CREATE admin request
+AdminReqReview --> AdminDB : UPDATE request status
+AdminReqReview --> UserDB : UPDATE user role (if approved)
+UserRoleUpdate --> UserDB : UPDATE user role
+
+' Database Operation Types
+UserDB : {
+  CREATE: New user registration
+  READ: Login, profile, user lookup
+  UPDATE: Profile, password, subscription
+  DELETE: User account deletion
+}
+
+CourseDB : {
+  CREATE: New course creation
+  READ: Course listing, course details
+  UPDATE: Course info, lecture management
+  DELETE: Course removal
+}
+
+PaymentDB : {
+  CREATE: Payment record creation
+  READ: Payment verification, history
+  UPDATE: Payment status updates
+  DELETE: Payment record removal
+}
+
+AdminDB : {
+  CREATE: Admin request creation
+  READ: Request listing, request details
+  UPDATE: Request status, review notes
+  DELETE: Request cleanup
+}
+
+' Operation Annotations
+note right of UserReg
+  User Registration Process:
+  1. Validate input data
+  2. Hash password with bcrypt
+  3. Create user document
+  4. Upload avatar to Cloudinary
+  5. Generate JWT token
+  6. Return success response
+end note
+
+note right of CourseCreate
+  Course Creation Process:
+  1. Validate course data
+  2. Create course document
+  3. Upload thumbnail to Cloudinary
+  4. Save course with thumbnail URL
+  5. Return course data
+end note
+
+note right of PaymentVerify
+  Payment Verification Process:
+  1. Receive payment details
+  2. Verify signature with Razorpay
+  3. Save payment record
+  4. Update user subscription status
+  5. Return verification result
+end note
+
+note right of AdminReqReview
+  Admin Request Review Process:
+  1. Find admin request by ID
+  2. Update request status
+  3. Add review notes
+  4. Update user role if approved
+  5. Return review result
+end note
+
+@enduml
+

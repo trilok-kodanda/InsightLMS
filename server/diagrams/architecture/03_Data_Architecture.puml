@@ -1,0 +1,169 @@
+@startuml Data Architecture
+
+!theme plain
+title Learning Management System - Data Architecture
+
+package "Application Layer" {
+    [Express.js Controllers] as Controllers
+    [Business Logic Services] as Services
+    [Data Access Layer] as DAL
+}
+
+package "Data Access Layer" {
+    [Mongoose ODM] as Mongoose
+    [Connection Pool] as ConnectionPool
+    [Query Builder] as QueryBuilder
+}
+
+package "Database Layer" {
+    database "MongoDB Atlas" {
+        [User Collection] as UserCollection
+        [Course Collection] as CourseCollection
+        [Payment Collection] as PaymentCollection
+        [AdminRequest Collection] as AdminCollection
+    }
+}
+
+package "External Data Sources" {
+    [Cloudinary Storage] as Cloudinary
+    [File System] as FileSystem
+    [Log Files] as LogFiles
+}
+
+package "Data Models" {
+    class "User Model" {
+        + _id: ObjectId
+        + fullName: String
+        + email: String (unique)
+        + password: String (hashed)
+        + role: Enum[USER, ADMIN]
+        + avatar: Object
+        + subscription: Object
+        + forgotPasswordToken: String
+        + forgotPasswordExpire: Date
+        + timestamps: Date
+        --
+        + comparePassword()
+        + generateJWTToken()
+        + generatePasswordResetToken()
+    }
+    
+    class "Course Model" {
+        + _id: ObjectId
+        + title: String
+        + description: String
+        + category: String
+        + lectures: Array
+        + thumbnail: Object
+        + numberOfLectures: Number
+        + createdBy: String
+        + timestamps: Date
+    }
+    
+    class "Payment Model" {
+        + _id: ObjectId
+        + razorpay_payment_id: String
+        + razorpay_subscription_id: String
+        + razorpay_signature: String
+        + user: ObjectId (ref: User)
+        + timestamps: Date
+    }
+    
+    class "AdminRequest Model" {
+        + _id: ObjectId
+        + user: ObjectId (ref: User)
+        + reason: String
+        + experience: String
+        + status: Enum[pending, approved, rejected]
+        + reviewedBy: ObjectId (ref: User)
+        + reviewedAt: Date
+        + reviewNotes: String
+        + timestamps: Date
+    }
+}
+
+package "Data Relationships" {
+    User ||--o{ Payment : "has many"
+    User ||--o{ AdminRequest : "has many"
+    User ||--o{ Course : "created by"
+    Course ||--o{ Lecture : "contains"
+}
+
+package "Data Operations" {
+    [Create Operations] as CreateOps
+    [Read Operations] as ReadOps
+    [Update Operations] as UpdateOps
+    [Delete Operations] as DeleteOps
+    [Query Operations] as QueryOps
+    [Aggregation Operations] as AggOps
+}
+
+' Application to Data Access
+Controllers --> Services : Business Logic
+Services --> DAL : Data Operations
+DAL --> Mongoose : ODM Operations
+
+' Data Access to Database
+Mongoose --> ConnectionPool : Connection Management
+ConnectionPool --> QueryBuilder : Query Construction
+QueryBuilder --> UserCollection : User Operations
+QueryBuilder --> CourseCollection : Course Operations
+QueryBuilder --> PaymentCollection : Payment Operations
+QueryBuilder --> AdminCollection : Admin Operations
+
+' Data Models to Collections
+UserModel --> UserCollection : Maps to
+CourseModel --> CourseCollection : Maps to
+PaymentModel --> PaymentCollection : Maps to
+AdminRequestModel --> AdminCollection : Maps to
+
+' External Data Sources
+Services --> Cloudinary : File Storage
+Services --> FileSystem : Temporary Files
+Services --> LogFiles : Error Logging
+
+' Data Operations Flow
+CreateOps --> Mongoose : Insert Operations
+ReadOps --> Mongoose : Find Operations
+UpdateOps --> Mongoose : Update Operations
+DeleteOps --> Mongoose : Delete Operations
+QueryOps --> Mongoose : Complex Queries
+AggOps --> Mongoose : Aggregation Pipeline
+
+note right of UserCollection
+  User Data Structure:
+  - Authentication info
+  - Profile data
+  - Subscription status
+  - Password reset tokens
+  - Indexes on email field
+end note
+
+note right of CourseCollection
+  Course Data Structure:
+  - Course metadata
+  - Lecture arrays
+  - Thumbnail info
+  - Creator reference
+  - Text indexes for search
+end note
+
+note right of PaymentCollection
+  Payment Data Structure:
+  - Razorpay payment details
+  - User reference
+  - Subscription info
+  - Timestamps for analytics
+end note
+
+note right of AdminCollection
+  Admin Request Structure:
+  - User reference
+  - Request details
+  - Review status
+  - Admin reviewer info
+  - Unique constraint on pending requests
+end note
+
+@enduml
+

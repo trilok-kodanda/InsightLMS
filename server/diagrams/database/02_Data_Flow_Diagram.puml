@@ -1,0 +1,179 @@
+@startuml Data Flow Diagram
+
+!theme plain
+title Learning Management System - Data Flow Diagram
+
+actor "User" as User
+actor "Admin" as Admin
+actor "System" as System
+
+package "External Systems" {
+    [Razorpay] as Razorpay
+    [Cloudinary] as Cloudinary
+    [Email Service] as EmailService
+}
+
+package "Application Layer" {
+    [User Controller] as UserCtrl
+    [Course Controller] as CourseCtrl
+    [Payment Controller] as PaymentCtrl
+    [Admin Controller] as AdminCtrl
+}
+
+package "Data Processing" {
+    [Authentication Service] as AuthService
+    [File Upload Service] as FileService
+    [Payment Service] as PaymentService
+    [Email Service] as EmailSvc
+}
+
+package "Database Layer" {
+    database "MongoDB" {
+        [User Collection] as UserDB
+        [Course Collection] as CourseDB
+        [Payment Collection] as PaymentDB
+        [AdminRequest Collection] as AdminDB
+    }
+}
+
+' User Registration Flow
+User --> UserCtrl : 1. Register Request (fullName, email, password, avatar)
+UserCtrl --> AuthService : 2. Validate & Hash Password
+AuthService --> UserDB : 3. Save User Data
+UserDB --> UserCtrl : 4. User Created
+UserCtrl --> Cloudinary : 5. Upload Avatar (if provided)
+Cloudinary --> UserCtrl : 6. Avatar URL
+UserCtrl --> User : 7. Registration Success + JWT Token
+
+' User Login Flow
+User --> UserCtrl : 1. Login Request (email, password)
+UserCtrl --> AuthService : 2. Validate Credentials
+AuthService --> UserDB : 3. Find User by Email
+UserDB --> AuthService : 4. User Data + Password Hash
+AuthService --> UserCtrl : 5. Password Match
+UserCtrl --> User : 6. Login Success + JWT Token
+
+' Course Creation Flow
+Admin --> CourseCtrl : 1. Create Course (title, description, category, thumbnail)
+CourseCtrl --> FileService : 2. Process Thumbnail Upload
+FileService --> Cloudinary : 3. Upload Thumbnail
+Cloudinary --> FileService : 4. Thumbnail URL
+FileService --> CourseCtrl : 5. Processed File Data
+CourseCtrl --> CourseDB : 6. Save Course Data
+CourseDB --> CourseCtrl : 7. Course Created
+CourseCtrl --> Admin : 8. Course Creation Success
+
+' Lecture Addition Flow
+Admin --> CourseCtrl : 1. Add Lecture (courseId, title, description, video)
+CourseCtrl --> CourseDB : 2. Find Course
+CourseDB --> CourseCtrl : 3. Course Data
+CourseCtrl --> FileService : 4. Process Video Upload
+FileService --> Cloudinary : 5. Upload Video
+Cloudinary --> FileService : 6. Video URL
+FileService --> CourseCtrl : 7. Processed Video Data
+CourseCtrl --> CourseDB : 8. Update Course with Lecture
+CourseDB --> CourseCtrl : 9. Course Updated
+CourseCtrl --> Admin : 10. Lecture Added Success
+
+' Course Access Flow
+User --> CourseCtrl : 1. Get All Courses
+CourseCtrl --> CourseDB : 2. Query Courses (exclude lectures)
+CourseDB --> CourseCtrl : 3. Course List
+CourseCtrl --> User : 4. Course Data
+
+' Subscription Purchase Flow
+User --> PaymentCtrl : 1. Buy Subscription
+PaymentCtrl --> PaymentService : 2. Create Subscription
+PaymentService --> Razorpay : 3. Create Razorpay Subscription
+Razorpay --> PaymentService : 4. Subscription ID
+PaymentService --> UserDB : 5. Update User Subscription
+UserDB --> PaymentService : 6. User Updated
+PaymentService --> PaymentCtrl : 7. Subscription Created
+PaymentCtrl --> User : 8. Subscription ID
+
+' Payment Verification Flow
+System --> PaymentCtrl : 1. Payment Verification (payment_id, subscription_id, signature)
+PaymentCtrl --> PaymentService : 2. Verify Payment
+PaymentService --> Razorpay : 3. Validate Signature
+Razorpay --> PaymentService : 4. Verification Result
+PaymentService --> PaymentDB : 5. Save Payment Record
+PaymentDB --> PaymentService : 6. Payment Saved
+PaymentService --> UserDB : 7. Update User Status to Active
+UserDB --> PaymentService : 8. User Updated
+PaymentService --> PaymentCtrl : 9. Verification Complete
+PaymentCtrl --> System : 10. Payment Verified
+
+' Admin Request Flow
+User --> AdminCtrl : 1. Request Admin Access (reason, experience)
+AdminCtrl --> AdminDB : 2. Save Admin Request
+AdminDB --> AdminCtrl : 3. Request Saved
+AdminCtrl --> User : 4. Request Submitted
+
+' Admin Review Flow
+Admin --> AdminCtrl : 1. Review Admin Request (requestId, status, notes)
+AdminCtrl --> AdminDB : 2. Find Admin Request
+AdminDB --> AdminCtrl : 3. Request Data
+AdminCtrl --> AdminDB : 4. Update Request Status
+AdminDB --> AdminCtrl : 5. Request Updated
+AdminCtrl --> UserDB : 6. Update User Role (if approved)
+UserDB --> AdminCtrl : 7. User Role Updated
+AdminCtrl --> Admin : 8. Review Complete
+
+' Password Reset Flow
+User --> UserCtrl : 1. Forgot Password (email)
+UserCtrl --> UserDB : 2. Find User by Email
+UserDB --> UserCtrl : 3. User Data
+UserCtrl --> AuthService : 4. Generate Reset Token
+AuthService --> UserDB : 5. Save Reset Token & Expiry
+UserDB --> AuthService : 6. Token Saved
+AuthService --> UserCtrl : 7. Reset Token Generated
+UserCtrl --> EmailSvc : 8. Send Reset Email
+EmailSvc --> EmailService : 9. Send Email
+EmailService --> EmailSvc : 10. Email Sent
+EmailSvc --> UserCtrl : 11. Email Processed
+UserCtrl --> User : 12. Reset Email Sent
+
+' Password Reset Completion Flow
+User --> UserCtrl : 1. Reset Password (token, newPassword)
+UserCtrl --> AuthService : 2. Validate Reset Token
+AuthService --> UserDB : 3. Find User by Token
+UserDB --> AuthService : 4. User Data
+AuthService --> UserCtrl : 5. Token Valid
+UserCtrl --> AuthService : 6. Hash New Password
+AuthService --> UserDB : 7. Update Password & Clear Token
+UserDB --> AuthService : 8. Password Updated
+AuthService --> UserCtrl : 9. Password Reset Complete
+UserCtrl --> User : 10. Password Reset Success
+
+note right of UserDB
+  User Data Operations:
+  - Create user with hashed password
+  - Update subscription status
+  - Store password reset tokens
+  - Role management
+end note
+
+note right of CourseDB
+  Course Data Operations:
+  - CRUD operations for courses
+  - Embedded lecture management
+  - Thumbnail URL storage
+  - Lecture count tracking
+end note
+
+note right of PaymentDB
+  Payment Data Operations:
+  - Store Razorpay payment details
+  - Payment verification records
+  - Subscription tracking
+end note
+
+note right of AdminDB
+  Admin Request Operations:
+  - Store admin requests
+  - Track review status
+  - Prevent duplicate requests
+end note
+
+@enduml
+

@@ -1,0 +1,67 @@
+@startuml User Management Use Cases
+
+!theme plain
+title User Management Use Cases
+
+actor User as u
+actor Admin as a
+actor System as s
+
+package "User Authentication & Profile" {
+    usecase "Register Account" as UC1
+    usecase "Login" as UC2
+    usecase "Logout" as UC3
+    usecase "View Profile" as UC4
+    usecase "Update Profile" as UC5
+    usecase "Change Password" as UC6
+    usecase "Forgot Password" as UC7
+    usecase "Reset Password" as UC8
+    usecase "Upload Avatar" as UC9
+}
+
+package "Admin Management" {
+    usecase "Request Admin Access" as UC10
+    usecase "View Admin Requests" as UC11
+    usecase "Review Admin Request" as UC12
+    usecase "Make User Admin" as UC13
+    usecase "View My Admin Request" as UC14
+}
+
+' User connections
+u --> UC1 : Register with email, password, fullName
+u --> UC2 : Login with credentials
+u --> UC3 : Logout from system
+u --> UC4 : View own profile
+u --> UC5 : Update fullName and avatar
+u --> UC6 : Change password with old/new password
+u --> UC7 : Request password reset via email
+u --> UC8 : Reset password with token
+u --> UC9 : Upload profile picture
+u --> UC10 : Submit admin request with reason/experience
+u --> UC14 : Check admin request status
+
+' Admin connections
+a --> UC11 : View all pending admin requests
+a --> UC12 : Approve/Reject admin requests
+a --> UC13 : Directly promote user to admin
+
+' System connections
+s --> UC7 : Send reset email
+s --> UC8 : Validate reset token
+
+UC1 .> UC9 : includes
+UC5 .> UC9 : includes
+UC7 .> UC8 : extends
+
+note right of UC1
+  Creates user with default avatar
+  Generates JWT token
+  Sets httpOnly cookie
+end note
+
+note right of UC10
+  Prevents duplicate requests
+  Requires reason and experience
+end note
+
+@enduml

@@ -1,0 +1,155 @@
+@startuml Controller Classes
+
+!theme plain
+title Learning Management System - Controller Classes
+
+class UserController {
+  - User: UserModel
+  - AdminRequest: AdminRequestModel
+  - AppError: AppError
+  - cloudinary: Cloudinary
+  - sendEmail: EmailService
+  - cookieOptions: Object
+  --
+  + register(req, res, next): Promise<Void>
+  + login(req, res, next): Promise<Void>
+  + logout(req, res, next): Promise<Void>
+  + getProfile(req, res, next): Promise<Void>
+  + forgetPassword(req, res, next): Promise<Void>
+  + resetPassword(req, res, next): Promise<Void>
+  + changePassword(req, res, next): Promise<Void>
+  + updateUser(req, res, next): Promise<Void>
+  + makeUserAdmin(req, res, next): Promise<Void>
+  + requestAdminAccess(req, res, next): Promise<Void>
+  + getAdminRequests(req, res, next): Promise<Void>
+  + reviewAdminRequest(req, res, next): Promise<Void>
+  + getUserAdminRequest(req, res, next): Promise<Void>
+  --
+  - validateRegistrationData(data): Boolean
+  - validateLoginData(data): Boolean
+  - validatePasswordResetData(data): Boolean
+  - validateAdminRequestData(data): Boolean
+  - uploadAvatar(file): Promise<String>
+  - generateCookieOptions(): Object
+  - sendPasswordResetEmail(email, token): Promise<Void>
+}
+
+class CourseController {
+  - Course: CourseModel
+  - AppError: AppError
+  - cloudinary: Cloudinary
+  - fs: FileSystem
+  --
+  + getAllCourses(req, res, next): Promise<Void>
+  + getLecturesByCourseId(req, res, next): Promise<Void>
+  + createCourse(req, res, next): Promise<Void>
+  + updateCourse(req, res, next): Promise<Void>
+  + deleteCourse(req, res, next): Promise<Void>
+  + addLectureToCourseById(req, res, next): Promise<Void>
+  + deleteLectureById(req, res, next): Promise<Void>
+  + updateLecture(req, res, next): Promise<Void>
+  --
+  - validateCourseData(data): Boolean
+  - validateLectureData(data): Boolean
+  - uploadThumbnail(file): Promise<Object>
+  - uploadLectureVideo(file): Promise<Object>
+  - deleteCloudinaryFile(publicId): Promise<Void>
+  - cleanupLocalFile(filePath): Promise<Void>
+  - updateLectureCount(course): Promise<Void>
+}
+
+class PaymentController {
+  - User: UserModel
+  - Payment: PaymentModel
+  - razorpay: Razorpay
+  - AppError: AppError
+  - crypto: Crypto
+  --
+  + getRazorpayApiKey(req, res, next): Promise<Void>
+  + buySubscription(req, res, next): Promise<Void>
+  + verifySubscription(req, res, next): Promise<Void>
+  + cancelSubscription(req, res, next): Promise<Void>
+  + getAllPayments(req, res, next): Promise<Void>
+  --
+  - validatePaymentData(data): Boolean
+  - validateSubscriptionData(data): Boolean
+  - generateSignature(paymentId, subscriptionId): String
+  - verifyPaymentSignature(signature, paymentId, subscriptionId): Boolean
+  - createRazorpaySubscription(): Promise<Object>
+  - cancelRazorpaySubscription(subscriptionId): Promise<Object>
+  - processRefund(paymentId): Promise<Object>
+  - calculateRefundPeriod(paymentDate): Boolean
+}
+
+class MiscellaneousController {
+  - sendEmail: EmailService
+  - User: UserModel
+  - AppError: AppError
+  --
+  + contactUs(req, res, next): Promise<Void>
+  + userStats(req, res, next): Promise<Void>
+  --
+  - validateContactData(data): Boolean
+  - formatContactEmail(data): String
+  - getTotalUsersCount(): Promise<Number>
+  + getSubscribedUsersCount(): Promise<Number>
+  - generateUserStats(): Promise<Object>
+}
+
+' Dependencies
+UserController ..> User : uses
+UserController ..> AdminRequest : uses
+UserController ..> AppError : uses
+UserController ..> cloudinary : uses
+UserController ..> sendEmail : uses
+
+CourseController ..> Course : uses
+CourseController ..> AppError : uses
+CourseController ..> cloudinary : uses
+
+PaymentController ..> User : uses
+PaymentController ..> Payment : uses
+PaymentController ..> AppError : uses
+PaymentController ..> razorpay : uses
+
+MiscellaneousController ..> sendEmail : uses
+MiscellaneousController ..> User : uses
+MiscellaneousController ..> AppError : uses
+
+note right of UserController
+  User Controller:
+  - Handles user authentication
+  - Profile management
+  - Admin request workflow
+  - Password reset functionality
+  - File upload for avatars
+end note
+
+note right of CourseController
+  Course Controller:
+  - Course CRUD operations
+  - Lecture management
+  - File upload handling
+  - Cloudinary integration
+  - Media cleanup operations
+end note
+
+note right of PaymentController
+  Payment Controller:
+  - Razorpay integration
+  - Subscription management
+  - Payment verification
+  - Refund processing
+  - Signature validation
+end note
+
+note right of MiscellaneousController
+  Miscellaneous Controller:
+  - Contact form handling
+  - User statistics
+  - Email notifications
+  - System analytics
+end note
+
+@enduml
+

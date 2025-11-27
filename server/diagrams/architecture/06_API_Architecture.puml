@@ -1,0 +1,229 @@
+@startuml API Architecture
+
+!theme plain
+title Learning Management System - API Architecture
+
+package "API Gateway" {
+    [Express.js Server] as APIServer
+    [CORS Middleware] as CORS
+    [Request Parser] as Parser
+    [Response Formatter] as Formatter
+}
+
+package "Middleware Stack" {
+    [Morgan Logger] as Morgan
+    [Cookie Parser] as CookieParser
+    [JSON Parser] as JSONParser
+    [URL Encoded Parser] as URLParser
+    [Authentication Middleware] as AuthMW
+    [Authorization Middleware] as AuthzMW
+    [File Upload Middleware] as UploadMW
+    [Error Handling Middleware] as ErrorMW
+}
+
+package "Route Handlers" {
+    package "User Routes (/api/v1/user)" {
+        [POST /register] as UserRegister
+        [POST /login] as UserLogin
+        [GET /logout] as UserLogout
+        [GET /profile] as UserProfile
+        [POST /reset] as ForgotPassword
+        [POST /reset/:token] as ResetPassword
+        [POST /changePassword] as ChangePassword
+        [PUT /update] as UpdateUser
+        [POST /request-admin] as RequestAdmin
+        [GET /admin-requests] as GetAdminRequests
+        [PUT /admin-requests/:id/review] as ReviewAdminRequest
+        [GET /my-admin-request] as GetMyAdminRequest
+    }
+    
+    package "Course Routes (/api/v1/course)" {
+        [GET /] as GetAllCourses
+        [POST /] as CreateCourse
+        [GET /:courseId] as GetCourseLectures
+        [PUT /:courseId] as UpdateCourse
+        [DELETE /:courseId] as DeleteCourse
+        [POST /:courseId] as AddLecture
+        [DELETE /:courseId/lectures/:lectureId] as DeleteLecture
+        [PUT /:courseId/lectures/:lectureId] as UpdateLecture
+    }
+    
+    package "Payment Routes (/api/v1/payment)" {
+        [GET /razorpay-key] as GetRazorpayKey
+        [POST /subscribe] as BuySubscription
+        [POST /verify] as VerifyPayment
+        [POST /unsubscribe] as CancelSubscription
+        [GET /] as GetAllPayments
+    }
+    
+    package "Miscellaneous Routes (/api/v1)" {
+        [POST /contact] as ContactUs
+        [GET /admin/stats/users] as UserStats
+    }
+}
+
+package "Controller Layer" {
+    [User Controller] as UserController
+    [Course Controller] as CourseController
+    [Payment Controller] as PaymentController
+    [Miscellaneous Controller] as MiscController
+}
+
+package "Service Layer" {
+    [User Service] as UserService
+    [Course Service] as CourseService
+    [Payment Service] as PaymentService
+    [Email Service] as EmailService
+    [File Service] as FileService
+}
+
+package "External API Integrations" {
+    [Razorpay API] as RazorpayAPI
+    [Cloudinary API] as CloudinaryAPI
+    [Email API] as EmailAPI
+}
+
+package "Response Types" {
+    [Success Response] as SuccessResp
+    [Error Response] as ErrorResp
+    [Validation Error] as ValidationResp
+    [Authentication Error] as AuthResp
+}
+
+' API Gateway Flow
+APIServer --> CORS : Handle CORS
+CORS --> Parser : Parse Request
+Parser --> Formatter : Format Response
+
+' Middleware Stack Flow
+Parser --> Morgan : Log Request
+Morgan --> CookieParser : Parse Cookies
+CookieParser --> JSONParser : Parse JSON
+JSONParser --> URLParser : Parse URL Encoded
+URLParser --> AuthMW : Check Authentication
+AuthMW --> AuthzMW : Check Authorization
+AuthzMW --> UploadMW : Handle File Uploads
+UploadMW --> ErrorMW : Handle Errors
+
+' Route Handler Flow
+ErrorMW --> UserRegister : Route to User Register
+ErrorMW --> UserLogin : Route to User Login
+ErrorMW --> UserLogout : Route to User Logout
+ErrorMW --> UserProfile : Route to User Profile
+ErrorMW --> ForgotPassword : Route to Forgot Password
+ErrorMW --> ResetPassword : Route to Reset Password
+ErrorMW --> ChangePassword : Route to Change Password
+ErrorMW --> UpdateUser : Route to Update User
+ErrorMW --> RequestAdmin : Route to Request Admin
+ErrorMW --> GetAdminRequests : Route to Get Admin Requests
+ErrorMW --> ReviewAdminRequest : Route to Review Admin Request
+ErrorMW --> GetMyAdminRequest : Route to Get My Admin Request
+
+ErrorMW --> GetAllCourses : Route to Get All Courses
+ErrorMW --> CreateCourse : Route to Create Course
+ErrorMW --> GetCourseLectures : Route to Get Course Lectures
+ErrorMW --> UpdateCourse : Route to Update Course
+ErrorMW --> DeleteCourse : Route to Delete Course
+ErrorMW --> AddLecture : Route to Add Lecture
+ErrorMW --> DeleteLecture : Route to Delete Lecture
+ErrorMW --> UpdateLecture : Route to Update Lecture
+
+ErrorMW --> GetRazorpayKey : Route to Get Razorpay Key
+ErrorMW --> BuySubscription : Route to Buy Subscription
+ErrorMW --> VerifyPayment : Route to Verify Payment
+ErrorMW --> CancelSubscription : Route to Cancel Subscription
+ErrorMW --> GetAllPayments : Route to Get All Payments
+
+ErrorMW --> ContactUs : Route to Contact Us
+ErrorMW --> UserStats : Route to User Stats
+
+' Controller Layer Flow
+UserRegister --> UserController : Handle Registration
+UserLogin --> UserController : Handle Login
+UserLogout --> UserController : Handle Logout
+UserProfile --> UserController : Handle Profile
+ForgotPassword --> UserController : Handle Forgot Password
+ResetPassword --> UserController : Handle Reset Password
+ChangePassword --> UserController : Handle Change Password
+UpdateUser --> UserController : Handle Update User
+RequestAdmin --> UserController : Handle Request Admin
+GetAdminRequests --> UserController : Handle Get Admin Requests
+ReviewAdminRequest --> UserController : Handle Review Admin Request
+GetMyAdminRequest --> UserController : Handle Get My Admin Request
+
+GetAllCourses --> CourseController : Handle Get All Courses
+CreateCourse --> CourseController : Handle Create Course
+GetCourseLectures --> CourseController : Handle Get Course Lectures
+UpdateCourse --> CourseController : Handle Update Course
+DeleteCourse --> CourseController : Handle Delete Course
+AddLecture --> CourseController : Handle Add Lecture
+DeleteLecture --> CourseController : Handle Delete Lecture
+UpdateLecture --> CourseController : Handle Update Lecture
+
+GetRazorpayKey --> PaymentController : Handle Get Razorpay Key
+BuySubscription --> PaymentController : Handle Buy Subscription
+VerifyPayment --> PaymentController : Handle Verify Payment
+CancelSubscription --> PaymentController : Handle Cancel Subscription
+GetAllPayments --> PaymentController : Handle Get All Payments
+
+ContactUs --> MiscController : Handle Contact Us
+UserStats --> MiscController : Handle User Stats
+
+' Service Layer Flow
+UserController --> UserService : Business Logic
+CourseController --> CourseService : Business Logic
+PaymentController --> PaymentService : Business Logic
+MiscController --> EmailService : Email Logic
+CourseController --> FileService : File Logic
+
+' External API Integration
+PaymentService --> RazorpayAPI : Payment Operations
+FileService --> CloudinaryAPI : File Operations
+EmailService --> EmailAPI : Email Operations
+
+' Response Flow
+UserService --> SuccessResp : Success Response
+CourseService --> SuccessResp : Success Response
+PaymentService --> SuccessResp : Success Response
+EmailService --> SuccessResp : Success Response
+
+ErrorMW --> ErrorResp : Error Response
+AuthMW --> AuthResp : Authentication Error
+UserService --> ValidationResp : Validation Error
+CourseService --> ValidationResp : Validation Error
+PaymentService --> ValidationResp : Validation Error
+
+note right of APIServer
+  Express.js Configuration:
+  - Port: 3000
+  - Environment: Production/Development
+  - CORS: Multiple domains allowed
+  - SSL: HTTPS enabled
+end note
+
+note right of AuthMW
+  Authentication Flow:
+  - JWT Token Validation
+  - Cookie-based Authentication
+  - Token Expiration Check
+  - User Role Extraction
+end note
+
+note right of UploadMW
+  File Upload Configuration:
+  - Max Size: 50MB
+  - Allowed Types: Images, Videos
+  - Temporary Storage: /uploads/
+  - Cloudinary Integration
+end note
+
+note right of RazorpayAPI
+  Payment Integration:
+  - Subscription Management
+  - Payment Verification
+  - Webhook Handling
+  - Refund Processing
+end note
+
+@enduml
+

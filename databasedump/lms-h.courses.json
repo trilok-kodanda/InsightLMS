@@ -1,0 +1,222 @@
+[{
+  "_id": {
+    "$oid": "6554e7c5424a6198d1f5f34a"
+  },
+  "title": "full stack 10",
+  "description": " cost effectivecost effectivecost effectivecost effectivecost effectivecost effective",
+  "category": "Web Developement",
+  "thumbnail": {
+    "public_id": "lms/social-wide_gxx5mu",
+    "secure_url": "https://www.sectorlink.com/img/blog/web-devel-important.jpg"
+  },
+  "numberOfLectures": 3,
+  "createdBy": " Purusoth",
+  "lectures": [
+    {
+      "lecture": {
+        "public_id": "lms/a5o9vwqks4emql5n0gpq",
+        "secure_url": "https://res.cloudinary.com/dpzitkiqb/video/upload/v1700064173/lms/a5o9vwqks4emql5n0gpq.mp4"
+      },
+      "title": "lecture 3",
+      "description": "introduction lecture descriptionintroduction lecture descriptionintroduction lecture descriptionintroduction lecture description",
+      "_id": {
+        "$oid": "6554ebaefe8076f2abe91249"
+      }
+    },
+    {
+      "title": "What Could You Have Done To Fight Back Against That?\" ... 16 \"If You Don't Fight, You Can't Win!\" ... 15 \"I Want To See And Understand The World Outside",
+      "description": "What Could You Have Done To Fight Back Against That?\" ...\r\n16 \"If You Don't Fight, You Can't Win!\" ...\r\n15 \"I Want To See And Understand The World Outside",
+      "lecture": {
+        "public_id": "lms/x85eoozwbuxwjlz2j75q",
+        "secure_url": "https://res.cloudinary.com/dpzitkiqb/video/upload/v1709066518/lms/x85eoozwbuxwjlz2j75q.mp4"
+      },
+      "_id": {
+        "$oid": "65de4917d821908697ad3c5c"
+      }
+    },
+    {
+      "title": "Lecture add success ",
+      "description": "I Do It Out Of My Own Free Will",
+      "lecture": {
+        "public_id": "lms/lj9bugmkdu7g23ohihr9",
+        "secure_url": "https://res.cloudinary.com/dpzitkiqb/video/upload/v1709068128/lms/lj9bugmkdu7g23ohihr9.mp4"
+      },
+      "_id": {
+        "$oid": "65de4f63d821908697ad3c65"
+      }
+    }
+  ],
+  "createdAt": {
+    "$date": "2023-11-15T15:46:13.833Z"
+  },
+  "updatedAt": {
+    "$date": "2024-02-27T21:08:51.742Z"
+  },
+  "__v": 9
+},
+{
+  "_id": {
+    "$oid": "65b941cd8837a391864f0450"
+  },
+  "title": "Data Science with Ml",
+  "description": " cost effectivecost effectivecost effectivecost effectivecost effectivecost effective",
+  "category": "AI",
+  "thumbnail": {
+    "public_id": "lms/c3b71pyd4do2fsc8u3s",
+    "secure_url": "https://api.reliasoftware.com/uploads/web_development_is_important_176fa0618e.jpg"
+  },
+  "numberOfLectures": 1,
+  "createdBy": "pratheek",
+  "lectures": [
+    {
+      "title": "NOTHING FOR DESCRIPTIONS FOR NOW",
+      "description": "NOTHING FOR DESCRIPTIONS FOR NOW NOTHING FOR DESCRIPTIONS FOR NOW NOTHING FOR DESCRIPTIONS FOR NOW",
+      "lecture": {
+        "public_id": "lms/hybnpxueuqmrzdual4bo",
+        "secure_url": "https://res.cloudinary.com/dpzitkiqb/video/upload/v1759417415/lms/hybnpxueuqmrzdual4bo.mp4"
+      },
+      "_id": {
+        "$oid": "68de9448bc447237a9dc1df3"
+      }
+    }
+  ],
+  "createdAt": {
+    "$date": "2024-01-30T18:37:01.867Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-02T15:03:36.926Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "65b943b58837a391864f0455"
+  },
+  "title": "Python Master",
+  "description": "Best course for Web Development . Build on latext Tech stack . NodeJs ,NextJs , ReactJs , Js , HTML , Css",
+  "category": "Python Developer",
+  "thumbnail": {
+    "public_id": "dummy",
+    "secure_url": "https://blog.eduonix.com/wp-content/uploads/2018/09/Scientific-Python-Scipy-696x500.jpg"
+  },
+  "numberOfLectures": 4,
+  "createdBy": "sathyagar",
+  "lectures": [],
+  "createdAt": {
+    "$date": "2024-01-30T18:45:09.487Z"
+  },
+  "updatedAt": {
+    "$date": "2024-01-30T18:45:12.062Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "65b943de8837a391864f0458"
+  },
+  "title": "Full Stack Developer",
+  "description": "Best course for Web Development . Build on latext Tech stack . NodeJs ,NextJs , ReactJs , Js , HTML , Css",
+  "category": "MERN Developer",
+  "thumbnail": {
+    "public_id": "dummy",
+    "secure_url": "https://midriffinfosolution.org/wp-content/uploads/2022/06/Web-Development-1.jpg"
+  },
+  "numberOfLectures": 6,
+  "createdBy": "Roshan",
+  "lectures": [],
+  "createdAt": {
+    "$date": "2024-01-30T18:45:50.667Z"
+  },
+  "updatedAt": {
+    "$date": "2024-01-30T18:45:52.812Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "65c8707216a139735cd903c9"
+  },
+  "title": "Cloud Computing",
+  "description": "Best course for Web Development . Build on latext Tech stack . NodeJs ,NextJs , ReactJs , Js , HTML , Css",
+  "category": "Cloud Engineer",
+  "thumbnail": {
+    "public_id": "dummy",
+    "secure_url": "https://suretyit.com.au/wp-content/uploads/2022/11/cloud-computing.jpg"
+  },
+  "numberOfLectures": 2,
+  "createdBy": "Sameer khan",
+  "lectures": [],
+  "createdAt": {
+    "$date": "2024-02-11T07:00:02.139Z"
+  },
+  "updatedAt": {
+    "$date": "2024-02-11T07:00:02.139Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "65c870c716a139735cd903cc"
+  },
+  "title": "PHP Developer",
+  "description": "Best course for Web Development . Build on latext Tech stack . NodeJs ,NextJs , ReactJs , Js , HTML , Css",
+  "category": "PHP Developer",
+  "thumbnail": {
+    "public_id": "dummy",
+    "secure_url": "https://www.webfulcreations.com/wp-content/uploads/2023/11/PHP-Jobs.jpg"
+  },
+  "numberOfLectures": 4,
+  "createdBy": "Saran",
+  "lectures": [],
+  "createdAt": {
+    "$date": "2024-02-11T07:01:27.515Z"
+  },
+  "updatedAt": {
+    "$date": "2024-02-11T07:01:29.429Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "65c8731a16a139735cd903d0"
+  },
+  "title": "Aamzon Web Service",
+  "description": "Best course for Web Development . Build on latext Tech stack . NodeJs ,NextJs , ReactJs , Js , HTML , Css",
+  "category": " AWS Developer",
+  "thumbnail": {
+    "public_id": "dummy",
+    "secure_url": "https://cdn.mindmajix.com/courses/aws-developer-training.png"
+  },
+  "numberOfLectures": 8,
+  "createdBy": "Jaysri",
+  "lectures": [],
+  "createdAt": {
+    "$date": "2024-02-11T07:11:22.967Z"
+  },
+  "updatedAt": {
+    "$date": "2024-02-11T07:11:27.130Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "65c8737016a139735cd903d5"
+  },
+  "title": "Angular",
+  "description": "Best course for Web Development . Build on latext Tech stack . NodeJs ,NextJs , ReactJs , Js , HTML , Css",
+  "category": " Angular Developer",
+  "thumbnail": {
+    "public_id": "dummy",
+    "secure_url": "https://wp-int-blog.s3.eu-central-1.amazonaws.com/wp-content/uploads/2023/04/28115901/10.png"
+  },
+  "numberOfLectures": 6,
+  "createdBy": "Renu",
+  "lectures": [],
+  "createdAt": {
+    "$date": "2024-02-11T07:12:48.135Z"
+  },
+  "updatedAt": {
+    "$date": "2024-02-11T07:12:50.032Z"
+  },
+  "__v": 0
+}]

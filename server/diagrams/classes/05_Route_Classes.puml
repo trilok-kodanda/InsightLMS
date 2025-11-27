@@ -1,0 +1,235 @@
+@startuml Route Classes
+
+!theme plain
+title Learning Management System - Route Classes
+
+class UserRoutes {
+  - express: Express
+  - router: ExpressRouter
+  - userController: UserController
+  - authMiddleware: AuthMiddleware
+  - upload: MulterMiddleware
+  --
+  + router: ExpressRouter
+  --
+  - configureRoutes(): Void
+  - applyMiddleware(): Void
+  - setupUserRoutes(): Void
+  - setupAdminRoutes(): Void
+  - setupAuthRoutes(): Void
+  - setupProfileRoutes(): Void
+}
+
+class CourseRoutes {
+  - express: Express
+  - router: ExpressRouter
+  - courseController: CourseController
+  - authMiddleware: AuthMiddleware
+  - upload: MulterMiddleware
+  --
+  + router: ExpressRouter
+  --
+  - configureRoutes(): Void
+  - applyMiddleware(): Void
+  - setupPublicRoutes(): Void
+  - setupProtectedRoutes(): Void
+  - setupAdminRoutes(): Void
+  - setupLectureRoutes(): Void
+}
+
+class PaymentRoutes {
+  - express: Express
+  - router: ExpressRouter
+  - paymentController: PaymentController
+  - authMiddleware: AuthMiddleware
+  --
+  + router: ExpressRouter
+  --
+  - configureRoutes(): Void
+  - applyMiddleware(): Void
+  - setupPaymentRoutes(): Void
+  - setupSubscriptionRoutes(): Void
+  - setupAdminRoutes(): Void
+}
+
+class MiscellaneousRoutes {
+  - express: Express
+  - router: ExpressRouter
+  - miscellaneousController: MiscellaneousController
+  - authMiddleware: AuthMiddleware
+  --
+  + router: ExpressRouter
+  --
+  - configureRoutes(): Void
+  - applyMiddleware(): Void
+  - setupContactRoutes(): Void
+  - setupStatsRoutes(): Void
+  - setupPublicRoutes(): Void
+}
+
+class App {
+  - express: Express
+  - cors: Cors
+  - cookieParser: CookieParser
+  - morgan: Morgan
+  - dotenv: DotEnv
+  - userRoutes: UserRoutes
+  - courseRoutes: CourseRoutes
+  - paymentRoutes: PaymentRoutes
+  - miscellaneousRoutes: MiscellaneousRoutes
+  - errorMiddleware: ErrorMiddleware
+  --
+  + app: Express
+  --
+  - configureMiddleware(): Void
+  - configureRoutes(): Void
+  - configureErrorHandling(): Void
+  - configureCORS(): Void
+  - configureLogging(): Void
+  - configureParsing(): Void
+  - setupDebugEndpoints(): Void
+  - setup404Handler(): Void
+}
+
+class Server {
+  - app: App
+  - connectToDB: DatabaseConnection
+  - cloudinary: Cloudinary
+  - razorpay: Razorpay
+  - PORT: Number
+  --
+  + start(): Void
+  --
+  - initializeDatabase(): Promise<Void>
+  - configureCloudinary(): Void
+  - configureRazorpay(): Void
+  - startServer(): Void
+  - handleGracefulShutdown(): Void
+  - logServerStart(): Void
+}
+
+class DatabaseConnection {
+  - mongoose: Mongoose
+  - MONGO_URI: String
+  --
+  + connectToDB(): Promise<Void>
+  --
+  - establishConnection(): Promise<MongooseConnection>
+  - handleConnectionError(error): Void
+  - logConnectionSuccess(connection): Void
+  - configureMongoose(): Void
+}
+
+' Dependencies
+UserRoutes ..> UserController : uses
+UserRoutes ..> AuthMiddleware : uses
+UserRoutes ..> MulterMiddleware : uses
+
+CourseRoutes ..> CourseController : uses
+CourseRoutes ..> AuthMiddleware : uses
+CourseRoutes ..> MulterMiddleware : uses
+
+PaymentRoutes ..> PaymentController : uses
+PaymentRoutes ..> AuthMiddleware : uses
+
+MiscellaneousRoutes ..> MiscellaneousController : uses
+MiscellaneousRoutes ..> AuthMiddleware : uses
+
+App ..> UserRoutes : uses
+App ..> CourseRoutes : uses
+App ..> PaymentRoutes : uses
+App ..> MiscellaneousRoutes : uses
+App ..> ErrorMiddleware : uses
+
+Server ..> App : uses
+Server ..> DatabaseConnection : uses
+
+' Route Configuration
+UserRoutes --> App : "/api/v1/user"
+CourseRoutes --> App : "/api/v1/course"
+PaymentRoutes --> App : "/api/v1/payment"
+MiscellaneousRoutes --> App : "/api/v1"
+
+' Middleware Chain
+AuthMiddleware --> UserRoutes : authentication
+AuthMiddleware --> CourseRoutes : authentication
+AuthMiddleware --> PaymentRoutes : authentication
+AuthMiddleware --> MiscellaneousRoutes : authentication
+
+MulterMiddleware --> UserRoutes : file upload
+MulterMiddleware --> CourseRoutes : file upload
+
+ErrorMiddleware --> App : error handling
+
+note right of UserRoutes
+  User Routes:
+  - POST /register
+  - POST /login
+  - GET /logout
+  - GET /profile
+  - POST /reset
+  - POST /reset/:token
+  - POST /changePassword
+  - PUT /update
+  - POST /request-admin
+  - GET /admin-requests
+  - PUT /admin-requests/:id/review
+  - GET /my-admin-request
+end note
+
+note right of CourseRoutes
+  Course Routes:
+  - GET / (public)
+  - POST / (admin)
+  - GET /:courseId (subscriber)
+  - PUT /:courseId (admin)
+  - DELETE /:courseId (admin)
+  - POST /:courseId (admin)
+  - DELETE /:courseId/lectures/:lectureId (admin)
+  - PUT /:courseId/lectures/:lectureId (admin)
+end note
+
+note right of PaymentRoutes
+  Payment Routes:
+  - GET /razorpay-key
+  - POST /subscribe
+  - POST /verify
+  - POST /unsubscribe
+  - GET / (admin)
+end note
+
+note right of MiscellaneousRoutes
+  Miscellaneous Routes:
+  - POST /contact (public)
+  - GET /admin/stats/users (admin)
+end note
+
+note right of App
+  App Configuration:
+  - Express.js application
+  - CORS configuration
+  - Middleware setup
+  - Route mounting
+  - Error handling
+  - Debug endpoints
+end note
+
+note right of Server
+  Server Configuration:
+  - Application startup
+  - Database connection
+  - External service configuration
+  - Port configuration
+  - Graceful shutdown
+end note
+
+note right of DatabaseConnection
+  Database Connection:
+  - MongoDB connection
+  - Connection error handling
+  - Mongoose configuration
+  - Connection logging
+end note
+
+@enduml
+

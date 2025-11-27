@@ -1,0 +1,238 @@
+@startuml Service Classes
+
+!theme plain
+title Learning Management System - Service Classes
+
+class UserService {
+  - User: UserModel
+  - AdminRequest: AdminRequestModel
+  - bcrypt: Bcrypt
+  - jwt: JsonWebToken
+  - crypto: Crypto
+  - cloudinary: Cloudinary
+  - sendEmail: EmailService
+  --
+  + registerUser(userData): Promise<User>
+  + authenticateUser(email, password): Promise<User>
+  + updateUserProfile(userId, profileData): Promise<User>
+  + changeUserPassword(userId, oldPassword, newPassword): Promise<User>
+  + requestPasswordReset(email): Promise<String>
+  + resetPassword(token, newPassword): Promise<User>
+  + makeUserAdmin(userId): Promise<User>
+  + requestAdminAccess(userId, requestData): Promise<AdminRequest>
+  + getAdminRequests(status): Promise<Array<AdminRequest>>
+  + reviewAdminRequest(requestId, reviewData): Promise<AdminRequest>
+  + getUserAdminRequest(userId): Promise<AdminRequest>
+  --
+  - validateUserData(userData): Boolean
+  - hashPassword(password): Promise<String>
+  - comparePassword(plainPassword, hashedPassword): Promise<Boolean>
+  - generateJWTToken(user): Promise<String>
+  - generatePasswordResetToken(): String
+  - uploadUserAvatar(file): Promise<Object>
+  - sendPasswordResetEmail(email, token): Promise<Void>
+  - validateAdminRequestData(requestData): Boolean
+}
+
+class CourseService {
+  - Course: CourseModel
+  - cloudinary: Cloudinary
+  - fs: FileSystem
+  --
+  + getAllCourses(): Promise<Array<Course>>
+  + getCourseById(courseId): Promise<Course>
+  + getCourseLectures(courseId): Promise<Array<Lecture>>
+  + createCourse(courseData): Promise<Course>
+  + updateCourse(courseId, courseData): Promise<Course>
+  + deleteCourse(courseId): Promise<Void>
+  + addLectureToCourse(courseId, lectureData): Promise<Course>
+  + updateLecture(courseId, lectureId, lectureData): Promise<Course>
+  + deleteLecture(courseId, lectureId): Promise<Course>
+  --
+  - validateCourseData(courseData): Boolean
+  - validateLectureData(lectureData): Boolean
+  - uploadCourseThumbnail(file): Promise<Object>
+  - uploadLectureVideo(file): Promise<Object>
+  - deleteCloudinaryFile(publicId, resourceType): Promise<Void>
+  - cleanupLocalFile(filePath): Promise<Void>
+  - updateLectureCount(course): Promise<Void>
+  - validateFileType(file): Boolean
+  - validateFileSize(file): Boolean
+}
+
+class PaymentService {
+  - User: UserModel
+  - Payment: PaymentModel
+  - razorpay: Razorpay
+  - crypto: Crypto
+  --
+  + getRazorpayApiKey(): String
+  + createSubscription(userId): Promise<Object>
+  + verifyPayment(paymentData): Promise<Payment>
+  + cancelSubscription(userId): Promise<Object>
+  + processRefund(paymentId): Promise<Object>
+  + getAllPayments(queryParams): Promise<Object>
+  + getPaymentStatistics(): Promise<Object>
+  --
+  - validatePaymentData(paymentData): Boolean
+  - generateSignature(paymentId, subscriptionId): String
+  - verifyPaymentSignature(signature, paymentId, subscriptionId): Boolean
+  - createRazorpaySubscription(): Promise<Object>
+  - cancelRazorpaySubscription(subscriptionId): Promise<Object>
+  - processRazorpayRefund(paymentId): Promise<Object>
+  - updateUserSubscriptionStatus(userId, status): Promise<User>
+  - calculateRefundPeriod(paymentDate): Boolean
+  - generateMonthlySalesData(payments): Object
+}
+
+class EmailService {
+  - nodemailer: Nodemailer
+  - transporter: NodemailerTransporter
+  --
+  + sendPasswordResetEmail(email, resetUrl): Promise<Void>
+  + sendContactFormEmail(contactData): Promise<Void>
+  + sendAdminNotificationEmail(adminEmail, notificationData): Promise<Void>
+  + sendWelcomeEmail(email, userName): Promise<Void>
+  --
+  - createTransporter(): NodemailerTransporter
+  - configureSMTP(): Object
+  - formatPasswordResetEmail(resetUrl): String
+  - formatContactFormEmail(contactData): String
+  - formatAdminNotificationEmail(notificationData): String
+  - formatWelcomeEmail(userName): String
+  - validateEmailAddress(email): Boolean
+  - sendEmail(to, subject, html): Promise<Void>
+}
+
+class FileService {
+  - cloudinary: Cloudinary
+  - fs: FileSystem
+  - path: Path
+  --
+  + uploadImage(file, folder): Promise<Object>
+  + uploadVideo(file, folder): Promise<Object>
+  + deleteFile(publicId, resourceType): Promise<Void>
+  + cleanupLocalFile(filePath): Promise<Void>
+  + validateFileType(file, allowedTypes): Boolean
+  + validateFileSize(file, maxSize): Boolean
+  --
+  - configureCloudinaryUpload(file, folder, resourceType): Object
+  - generateUniqueFilename(file): String
+  - getFileExtension(filename): String
+  - isImageFile(file): Boolean
+  - isVideoFile(file): Boolean
+  - formatFileSize(bytes): String
+}
+
+class ValidationService {
+  - validator: Validator
+  --
+  + validateEmail(email): Boolean
+  + validatePassword(password): Boolean
+  + validateUserData(userData): Boolean
+  + validateCourseData(courseData): Boolean
+  + validateLectureData(lectureData): Boolean
+  + validatePaymentData(paymentData): Boolean
+  + validateAdminRequestData(requestData): Boolean
+  + validateFileUpload(file): Boolean
+  --
+  - validateStringLength(str, min, max): Boolean
+  - validateRequiredFields(data, requiredFields): Boolean
+  - validateEnumValue(value, allowedValues): Boolean
+  - validateObjectId(id): Boolean
+  - sanitizeInput(input): String
+  - validateFileType(file, allowedTypes): Boolean
+  - validateFileSize(file, maxSize): Boolean
+}
+
+' Dependencies
+UserService ..> User : uses
+UserService ..> AdminRequest : uses
+UserService ..> bcrypt : uses
+UserService ..> jwt : uses
+UserService ..> crypto : uses
+UserService ..> cloudinary : uses
+UserService ..> sendEmail : uses
+
+CourseService ..> Course : uses
+CourseService ..> cloudinary : uses
+CourseService ..> fs : uses
+
+PaymentService ..> User : uses
+PaymentService ..> Payment : uses
+PaymentService ..> razorpay : uses
+PaymentService ..> crypto : uses
+
+EmailService ..> nodemailer : uses
+
+FileService ..> cloudinary : uses
+FileService ..> fs : uses
+FileService ..> path : uses
+
+ValidationService ..> validator : uses
+
+' Service Interactions
+UserService --> EmailService : sends emails
+UserService --> FileService : handles file uploads
+CourseService --> FileService : handles file uploads
+PaymentService --> UserService : updates user subscription
+ValidationService --> UserService : validates data
+ValidationService --> CourseService : validates data
+ValidationService --> PaymentService : validates data
+
+note right of UserService
+  User Service:
+  - User authentication and authorization
+  - Profile management
+  - Admin request workflow
+  - Password reset functionality
+  - File upload handling
+end note
+
+note right of CourseService
+  Course Service:
+  - Course CRUD operations
+  - Lecture management
+  - File upload handling
+  - Media cleanup operations
+  - Content validation
+end note
+
+note right of PaymentService
+  Payment Service:
+  - Razorpay integration
+  - Subscription management
+  - Payment verification
+  - Refund processing
+  - Analytics and reporting
+end note
+
+note right of EmailService
+  Email Service:
+  - SMTP configuration
+  - Email templating
+  - Notification sending
+  - Email validation
+  - Multi-purpose email support
+end note
+
+note right of FileService
+  File Service:
+  - Cloudinary integration
+  - File upload handling
+  - File validation
+  - Media cleanup
+  - File type management
+end note
+
+note right of ValidationService
+  Validation Service:
+  - Input validation
+  - Data sanitization
+  - File validation
+  - Business rule validation
+  - Security validation
+end note
+
+@enduml
+

@@ -1,0 +1,292 @@
+@startuml Overall Class Diagram
+
+!theme plain
+title Learning Management System - Overall Class Diagram
+
+package "Presentation Layer" {
+  class App {
+    - express: Express
+    - cors: Cors
+    - cookieParser: CookieParser
+    - morgan: Morgan
+    + app: Express
+    --
+    - configureMiddleware(): Void
+    - configureRoutes(): Void
+    - configureErrorHandling(): Void
+  }
+  
+  class Server {
+    - app: App
+    - connectToDB: DatabaseConnection
+    - cloudinary: Cloudinary
+    - razorpay: Razorpay
+    + start(): Void
+    --
+    - initializeDatabase(): Promise<Void>
+    - configureCloudinary(): Void
+    - configureRazorpay(): Void
+  }
+}
+
+package "Controller Layer" {
+  class UserController {
+    - User: UserModel
+    - AdminRequest: AdminRequestModel
+    + register(req, res, next): Promise<Void>
+    + login(req, res, next): Promise<Void>
+    + getProfile(req, res, next): Promise<Void>
+    + requestAdminAccess(req, res, next): Promise<Void>
+  }
+  
+  class CourseController {
+    - Course: CourseModel
+    + getAllCourses(req, res, next): Promise<Void>
+    + createCourse(req, res, next): Promise<Void>
+    + addLectureToCourseById(req, res, next): Promise<Void>
+  }
+  
+  class PaymentController {
+    - User: UserModel
+    - Payment: PaymentModel
+    + buySubscription(req, res, next): Promise<Void>
+    + verifySubscription(req, res, next): Promise<Void>
+  }
+  
+  class MiscellaneousController {
+    + contactUs(req, res, next): Promise<Void>
+    + userStats(req, res, next): Promise<Void>
+  }
+}
+
+package "Service Layer" {
+  class UserService {
+    - User: UserModel
+    - bcrypt: Bcrypt
+    - jwt: JsonWebToken
+    + registerUser(userData): Promise<User>
+    + authenticateUser(email, password): Promise<User>
+    + requestAdminAccess(userId, requestData): Promise<AdminRequest>
+  }
+  
+  class CourseService {
+    - Course: CourseModel
+    + getAllCourses(): Promise<Array<Course>>
+    + createCourse(courseData): Promise<Course>
+    + addLectureToCourse(courseId, lectureData): Promise<Course>
+  }
+  
+  class PaymentService {
+    - User: UserModel
+    - Payment: PaymentModel
+    + createSubscription(userId): Promise<Object>
+    + verifyPayment(paymentData): Promise<Payment>
+  }
+  
+  class EmailService {
+    - nodemailer: Nodemailer
+    + sendPasswordResetEmail(email, resetUrl): Promise<Void>
+    + sendContactFormEmail(contactData): Promise<Void>
+  }
+}
+
+package "Data Access Layer" {
+  class User {
+    - _id: ObjectId
+    - fullName: String
+    - email: String
+    - password: String
+    - role: String
+    + comparePassword(plainTextPassword): Promise<Boolean>
+    + generateJWTToken(): Promise<String>
+  }
+  
+  class Course {
+    - _id: ObjectId
+    - title: String
+    - description: String
+    - lectures: Array<Lecture>
+    + addLecture(lectureData): Course
+    + updateNumberOfLectures(): Void
+  }
+  
+  class Lecture {
+    - _id: ObjectId
+    - title: String
+    - description: String
+    - lecture: Object
+  }
+  
+  class Payment {
+    - _id: ObjectId
+    - razorpay_payment_id: String
+    - razorpay_subscription_id: String
+    - razorpay_signature: String
+  }
+  
+  class AdminRequest {
+    - _id: ObjectId
+    - user: ObjectId
+    - reason: String
+    - status: String
+    + approve(adminId, notes): Void
+    + reject(adminId, notes): Void
+  }
+}
+
+package "Middleware Layer" {
+  class AuthMiddleware {
+    - jwt: JsonWebToken
+    - logger: Logger
+    + isLoggedIn(req, res, next): Void
+    + authorizedRoles(...roles): Function
+    + authorizedSubscriber(req, res, next): Promise<Void>
+  }
+  
+  class ErrorMiddleware {
+    - logger: Logger
+    + errorMiddleware(err, req, res, next): Void
+  }
+  
+  class MulterMiddleware {
+    - multer: Multer
+    + upload: Multer
+  }
+}
+
+package "Utility Layer" {
+  class AppError {
+    - message: String
+    - statusCode: Number
+    + constructor(message, statusCode): Void
+  }
+  
+  class Logger {
+    - winston: Winston
+    + info(message, meta): Void
+    + error(message, meta): Void
+  }
+  
+  class SendEmail {
+    - nodemailer: Nodemailer
+    + sendEmail(email, subject, message): Promise<Void>
+  }
+}
+
+package "External Services" {
+  class Cloudinary {
+    + upload(file, options): Promise<Object>
+    + destroy(publicId): Promise<Object>
+  }
+  
+  class Razorpay {
+    + subscriptions.create(options): Promise<Object>
+    + subscriptions.cancel(id): Promise<Object>
+    + payments.refund(id): Promise<Object>
+  }
+  
+  class MongoDB {
+    + connect(uri): Promise<Connection>
+    + find(query): Promise<Array<Document>>
+    + save(document): Promise<Document>
+  }
+}
+
+' Layer Dependencies
+App --> UserController : uses
+App --> CourseController : uses
+App --> PaymentController : uses
+App --> MiscellaneousController : uses
+App --> ErrorMiddleware : uses
+
+UserController --> UserService : uses
+CourseController --> CourseService : uses
+PaymentController --> PaymentService : uses
+MiscellaneousController --> EmailService : uses
+
+UserService --> User : uses
+UserService --> AdminRequest : uses
+CourseService --> Course : uses
+CourseService --> Lecture : uses
+PaymentService --> Payment : uses
+PaymentService --> User : uses
+
+AuthMiddleware --> UserController : protects
+AuthMiddleware --> CourseController : protects
+AuthMiddleware --> PaymentController : protects
+
+MulterMiddleware --> UserController : file upload
+MulterMiddleware --> CourseController : file upload
+
+ErrorMiddleware --> App : error handling
+
+UserService --> EmailService : sends emails
+CourseService --> Cloudinary : file storage
+PaymentService --> Razorpay : payments
+UserService --> Cloudinary : avatar upload
+
+User --> MongoDB : persists
+Course --> MongoDB : persists
+Payment --> MongoDB : persists
+AdminRequest --> MongoDB : persists
+
+' Inheritance
+AppError --|> Error : extends
+
+' Composition
+Course *-- Lecture : contains
+User ||--o{ Payment : makes
+User ||--o{ AdminRequest : requests
+User ||--o{ Course : creates
+AdminRequest }o--|| User : reviewed by
+
+note top of App
+  Application Entry Point:
+  - Express.js configuration
+  - Middleware setup
+  - Route mounting
+  - Error handling
+end note
+
+note right of UserController
+  User Management:
+  - Authentication
+  - Profile management
+  - Admin requests
+  - Password reset
+end note
+
+note right of CourseController
+  Course Management:
+  - Course CRUD
+  - Lecture management
+  - File uploads
+  - Content access
+end note
+
+note right of PaymentController
+  Payment Processing:
+  - Subscription management
+  - Payment verification
+  - Refund processing
+  - Razorpay integration
+end note
+
+note bottom of User
+  User Model:
+  - Authentication data
+  - Profile information
+  - Subscription status
+  - Role management
+end note
+
+note bottom of Course
+  Course Model:
+  - Course information
+  - Embedded lectures
+  - Media references
+  - Creator tracking
+end note
+
+@enduml
+

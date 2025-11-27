@@ -1,0 +1,93 @@
+@startuml Learning Management System - Overall Use Case Overview
+
+!theme plain
+title Learning Management System - Overall Use Case Overview
+
+actor Guest as g
+actor Student as s
+actor Subscriber as sub
+actor Admin as a
+actor PaymentGateway as pg
+actor EmailService as es
+
+package "Public Access" {
+    usecase "Browse Courses" as UC1
+    usecase "Contact Support" as UC2
+}
+
+package "User Management" {
+    usecase "User Registration" as UC3
+    usecase "User Authentication" as UC4
+    usecase "Profile Management" as UC5
+    usecase "Admin Request System" as UC6
+}
+
+package "Course Management" {
+    usecase "Course CRUD Operations" as UC7
+    usecase "Lecture Management" as UC8
+    usecase "Content Access Control" as UC9
+}
+
+package "Payment System" {
+    usecase "Subscription Management" as UC10
+    usecase "Payment Processing" as UC11
+    usecase "Refund Management" as UC12
+}
+
+package "Administration" {
+    usecase "User Administration" as UC13
+    usecase "Analytics & Reporting" as UC14
+    usecase "System Monitoring" as UC15
+}
+
+' Guest connections
+g --> UC1 : View course catalog
+g --> UC2 : Submit contact form
+
+' Student connections
+s --> UC3 : Register account
+s --> UC4 : Login/Logout
+s --> UC5 : Manage profile
+s --> UC1 : Browse courses
+s --> UC10 : Purchase subscription
+
+' Subscriber connections
+sub --> UC1 : Browse courses
+sub --> UC9 : Access course content
+sub --> UC10 : Manage subscription
+sub --> UC12 : Request refunds
+
+' Admin connections
+a --> UC6 : Manage admin requests
+a --> UC7 : Create/Update/Delete courses
+a --> UC8 : Manage lectures
+a --> UC13 : Promote users to admin
+a --> UC14 : View analytics
+a --> UC15 : Monitor system
+
+' External services
+pg --> UC11 : Process payments
+es --> UC2 : Send contact emails
+es --> UC4 : Send password reset emails
+
+UC4 .> UC5 : extends
+UC7 .> UC8 : includes
+UC10 .> UC11 : includes
+UC10 .> UC12 : extends
+UC13 .> UC6 : includes
+
+note top of UC9
+  Access control based on:
+  - User subscription status
+  - Admin privileges
+  - Authentication state
+end note
+
+note right of UC11
+  Integrates with Razorpay
+  Handles subscription verification
+  Manages payment signatures
+end note
+
+@enduml
+

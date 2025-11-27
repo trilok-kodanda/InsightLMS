@@ -1,0 +1,168 @@
+@startuml Security Architecture
+
+!theme plain
+title Learning Management System - Security Architecture
+
+package "Client Security" {
+    [HTTPS/SSL] as HTTPS
+    [CORS Policy] as CORS
+    [Input Validation] as InputVal
+    [XSS Protection] as XSSProtection
+}
+
+package "API Security" {
+    [Authentication Middleware] as AuthMiddleware
+    [Authorization Middleware] as AuthzMiddleware
+    [Rate Limiting] as RateLimit
+    [Request Validation] as ReqValidation
+    [Error Handling] as ErrorHandling
+}
+
+package "Authentication & Authorization" {
+    [JWT Token Service] as JWTService
+    [Password Hashing] as PasswordHash
+    [Role-Based Access Control] as RBAC
+    [Session Management] as SessionMgmt
+}
+
+package "Data Security" {
+    [Database Encryption] as DBEncryption
+    [Field-Level Encryption] as FieldEncryption
+    [Data Sanitization] as DataSanitization
+    [Query Injection Prevention] as SQLInjectionPrevention
+}
+
+package "File Security" {
+    [File Type Validation] as FileTypeVal
+    [File Size Limits] as FileSizeLimit
+    [Upload Path Validation] as UploadPathVal
+    [Virus Scanning] as VirusScan
+}
+
+package "External Service Security" {
+    [API Key Management] as APIKeyMgmt
+    [Webhook Verification] as WebhookVerification
+    [Signature Verification] as SignatureVerification
+    [SSL Certificate Validation] as SSLValidation
+}
+
+package "Security Components" {
+    class "Authentication Flow" {
+        + Login Request
+        + Credential Validation
+        + JWT Token Generation
+        + Cookie Setting
+        + Token Verification
+    }
+    
+    class "Authorization Levels" {
+        + Guest Access
+        + User Access
+        + Subscriber Access
+        + Admin Access
+    }
+    
+    class "Security Middleware Stack" {
+        + CORS Middleware
+        + Authentication Middleware
+        + Authorization Middleware
+        + File Upload Middleware
+        + Error Handling Middleware
+    }
+}
+
+package "Security Threats & Mitigations" {
+    [SQL Injection] --> [Mongoose ODM Protection]
+    [XSS Attacks] --> [Input Sanitization]
+    [CSRF Attacks] --> [SameSite Cookies]
+    [File Upload Attacks] --> [File Type Validation]
+    [Brute Force] --> [Rate Limiting]
+    [Session Hijacking] --> [HttpOnly Cookies]
+    [Man-in-the-Middle] --> [HTTPS/TLS]
+}
+
+' Client to API Security
+HTTPS --> CORS : Secure Transport
+CORS --> InputVal : Request Validation
+InputVal --> XSSProtection : XSS Prevention
+
+' API Security Flow
+XSSProtection --> AuthMiddleware : Authentication Check
+AuthMiddleware --> AuthzMiddleware : Authorization Check
+AuthzMiddleware --> RateLimit : Rate Limiting
+RateLimit --> ReqValidation : Request Validation
+ReqValidation --> ErrorHandling : Error Management
+
+' Authentication & Authorization Flow
+AuthMiddleware --> JWTService : Token Validation
+JWTService --> PasswordHash : Credential Verification
+PasswordHash --> RBAC : Role Assignment
+RBAC --> SessionMgmt : Session Control
+
+' Data Security Flow
+ReqValidation --> DataSanitization : Input Sanitization
+DataSanitization --> DBEncryption : Data Encryption
+DBEncryption --> FieldEncryption : Field-Level Security
+FieldEncryption --> SQLInjectionPrevention : Query Protection
+
+' File Security Flow
+ReqValidation --> FileTypeVal : File Type Check
+FileTypeVal --> FileSizeLimit : Size Validation
+FileSizeLimit --> UploadPathVal : Path Validation
+UploadPathVal --> VirusScan : Malware Check
+
+' External Service Security
+JWTService --> APIKeyMgmt : API Key Management
+APIKeyMgmt --> WebhookVerification : Webhook Security
+WebhookVerification --> SignatureVerification : Signature Validation
+SignatureVerification --> SSLValidation : Certificate Validation
+
+' Security Middleware Integration
+Security Middleware Stack --> AuthMiddleware : Authentication
+Security Middleware Stack --> AuthzMiddleware : Authorization
+Security Middleware Stack --> FileTypeVal : File Security
+Security Middleware Stack --> ErrorHandling : Error Security
+
+' Threat Mitigation Flow
+SQL Injection --> SQLInjectionPrevention : Mitigation
+XSS Attacks --> XSSProtection : Mitigation
+CSRF Attacks --> SessionMgmt : Mitigation
+File Upload Attacks --> FileTypeVal : Mitigation
+Brute Force --> RateLimit : Mitigation
+Session Hijacking --> JWTService : Mitigation
+Man-in-the-Middle --> HTTPS : Mitigation
+
+note right of JWTService
+  JWT Token Structure:
+  - User ID
+  - User Role
+  - Subscription Status
+  - Expiration Time
+  - HttpOnly Cookie Storage
+end note
+
+note right of RBAC
+  Role Hierarchy:
+  Guest → Student → Subscriber → Admin
+  Each role has specific permissions
+  and access levels
+end note
+
+note right of FileTypeVal
+  Allowed File Types:
+  - Images: .png, .jpg, .jpeg, .webp
+  - Videos: .mp4
+  - Max Size: 50MB
+  - Upload Path: /uploads/
+end note
+
+note right of APIKeyMgmt
+  External Service Keys:
+  - Razorpay API Keys
+  - Cloudinary Credentials
+  - Email Service Keys
+  - Environment Variable Storage
+end note
+
+@enduml
+

@@ -1,0 +1,178 @@
+@startuml Middleware Classes
+
+!theme plain
+title Learning Management System - Middleware Classes
+
+class AuthMiddleware {
+  - AppError: AppError
+  - jwt: JsonWebToken
+  - logger: Logger
+  - asyncHandler: AsyncHandler
+  --
+  + isLoggedIn(req, res, next): Void
+  + authorizedRoles(...roles): Function
+  + authorizedSubscriber(req, res, next): Promise<Void>
+  --
+  - validateToken(token): Object
+  - extractUserFromToken(token): Object
+  - checkTokenExpiration(token): Boolean
+  - logAuthenticationAttempt(req): Void
+  - logAuthenticationSuccess(req, user): Void
+  - logAuthenticationFailure(req, error): Void
+}
+
+class ErrorMiddleware {
+  - logger: Logger
+  --
+  + errorMiddleware(err, req, res, next): Void
+  --
+  - logError(error): Void
+  - formatErrorResponse(error): Object
+  - determineStatusCode(error): Number
+  - shouldIncludeStack(error): Boolean
+}
+
+class AsyncHandler {
+  --
+  + asyncHandler(fn): Function
+  --
+  - catchAsyncError(fn): Function
+  - wrapAsyncFunction(fn): Function
+}
+
+class MulterMiddleware {
+  - multer: Multer
+  - path: Path
+  --
+  + upload: Multer
+  --
+  - configureStorage(): MulterStorage
+  - configureFileFilter(): Function
+  - configureLimits(): Object
+  - generateFilename(req, file, cb): Void
+  - validateFileType(file): Boolean
+  - validateFileSize(file): Boolean
+}
+
+class Logger {
+  - winston: Winston
+  - transports: Array<WinstonTransport>
+  - format: WinstonFormat
+  --
+  + info(message, meta): Void
+  + warn(message, meta): Void
+  + error(message, meta): Void
+  + debug(message, meta): Void
+  --
+  - createLogger(): WinstonLogger
+  - configureTransports(): Array<WinstonTransport>
+  - configureFormat(): WinstonFormat
+  - formatMessage(level, message, meta): String
+}
+
+class AppError {
+  - message: String
+  - statusCode: Number
+  - stack: String
+  --
+  + constructor(message, statusCode): Void
+  --
+  - captureStackTrace(): Void
+  - setStatusCode(code): Void
+  - setMessage(msg): Void
+}
+
+class SendEmail {
+  - nodemailer: Nodemailer
+  - transporter: NodemailerTransporter
+  --
+  + sendEmail(email, subject, message): Promise<Void>
+  --
+  - createTransporter(): NodemailerTransporter
+  - configureSMTP(): Object
+  - formatEmailMessage(to, subject, html): Object
+  - validateEmailAddress(email): Boolean
+}
+
+' Dependencies
+AuthMiddleware ..> AppError : uses
+AuthMiddleware ..> jwt : uses
+AuthMiddleware ..> Logger : uses
+AuthMiddleware ..> AsyncHandler : uses
+
+ErrorMiddleware ..> Logger : uses
+
+AsyncHandler ..> AsyncHandler : self-reference
+
+MulterMiddleware ..> multer : uses
+MulterMiddleware ..> path : uses
+
+Logger ..> winston : uses
+
+SendEmail ..> nodemailer : uses
+
+' Middleware Chain
+AuthMiddleware --> ErrorMiddleware : error handling
+AsyncHandler --> AuthMiddleware : async wrapper
+MulterMiddleware --> AuthMiddleware : file upload
+ErrorMiddleware --> Logger : error logging
+AuthMiddleware --> Logger : authentication logging
+
+note right of AuthMiddleware
+  Authentication Middleware:
+  - JWT token validation
+  - Role-based authorization
+  - Subscription-based access
+  - Comprehensive logging
+  - Error handling
+end note
+
+note right of ErrorMiddleware
+  Error Middleware:
+  - Centralized error handling
+  - Error logging
+  - Response formatting
+  - Stack trace management
+end note
+
+note right of AsyncHandler
+  Async Handler:
+  - Wraps async functions
+  - Catches and forwards errors
+  - Prevents unhandled promise rejections
+end note
+
+note right of MulterMiddleware
+  Multer Middleware:
+  - File upload handling
+  - File type validation
+  - File size limits
+  - Storage configuration
+end note
+
+note right of Logger
+  Logger:
+  - Winston-based logging
+  - Multiple log levels
+  - File transport
+  - Formatted output
+end note
+
+note right of AppError
+  App Error:
+  - Custom error class
+  - Status code management
+  - Stack trace capture
+  - Error inheritance
+end note
+
+note right of SendEmail
+  Send Email:
+  - Nodemailer integration
+  - SMTP configuration
+  - Email validation
+  - HTML email support
+end note
+
+@enduml
+

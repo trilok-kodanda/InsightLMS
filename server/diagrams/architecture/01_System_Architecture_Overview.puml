@@ -1,0 +1,155 @@
+@startuml System Architecture Overview
+
+!theme plain
+title Learning Management System - System Architecture Overview
+
+!define RECTANGLE class
+!define COMPONENT component
+
+package "Client Layer" {
+    [Web Browser] as Browser
+    [Mobile App] as Mobile
+    [Admin Dashboard] as AdminUI
+}
+
+package "API Gateway Layer" {
+    [Load Balancer] as LB
+    [CORS Middleware] as CORS
+    [Request Validation] as Validation
+}
+
+package "Application Layer" {
+    [Express.js Server] as Server
+    [Authentication Middleware] as Auth
+    [File Upload Middleware] as Upload
+    [Error Handling Middleware] as ErrorHandler
+    [Logging Middleware] as Logger
+}
+
+package "Business Logic Layer" {
+    package "User Management" {
+        [User Controller] as UserCtrl
+        [User Service] as UserSvc
+    }
+    
+    package "Course Management" {
+        [Course Controller] as CourseCtrl
+        [Course Service] as CourseSvc
+    }
+    
+    package "Payment Management" {
+        [Payment Controller] as PaymentCtrl
+        [Payment Service] as PaymentSvc
+    }
+    
+    package "Admin Management" {
+        [Admin Controller] as AdminCtrl
+        [Admin Service] as AdminSvc
+    }
+}
+
+package "Data Access Layer" {
+    [Mongoose ODM] as Mongoose
+    [User Model] as UserModel
+    [Course Model] as CourseModel
+    [Payment Model] as PaymentModel
+    [AdminRequest Model] as AdminModel
+}
+
+package "External Services" {
+    [MongoDB Database] as MongoDB
+    [Cloudinary CDN] as Cloudinary
+    [Razorpay Payment Gateway] as Razorpay
+    [Email Service] as EmailService
+}
+
+package "Infrastructure" {
+    [File System] as FileSystem
+    [Log Files] as LogFiles
+    [Environment Config] as Config
+}
+
+' Client to API Gateway
+Browser --> LB : HTTPS/HTTP
+Mobile --> LB : HTTPS/HTTP
+AdminUI --> LB : HTTPS/HTTP
+
+' API Gateway to Application
+LB --> CORS : Route Request
+CORS --> Validation : Validate Request
+Validation --> Server : Process Request
+
+' Application Layer Flow
+Server --> Auth : Check Authentication
+Server --> Upload : Handle File Uploads
+Server --> ErrorHandler : Handle Errors
+Server --> Logger : Log Events
+
+' Business Logic Flow
+Server --> UserCtrl : User Operations
+Server --> CourseCtrl : Course Operations
+Server --> PaymentCtrl : Payment Operations
+Server --> AdminCtrl : Admin Operations
+
+UserCtrl --> UserSvc : Business Logic
+CourseCtrl --> CourseSvc : Business Logic
+PaymentCtrl --> PaymentSvc : Business Logic
+AdminCtrl --> AdminSvc : Business Logic
+
+' Data Access Flow
+UserSvc --> UserModel : Data Operations
+CourseSvc --> CourseModel : Data Operations
+PaymentSvc --> PaymentModel : Data Operations
+AdminSvc --> AdminModel : Data Operations
+
+UserModel --> Mongoose : Database Operations
+CourseModel --> Mongoose : Database Operations
+PaymentModel --> Mongoose : Database Operations
+AdminModel --> Mongoose : Database Operations
+
+Mongoose --> MongoDB : Data Persistence
+
+' External Service Integration
+PaymentSvc --> Razorpay : Payment Processing
+UserSvc --> EmailService : Email Notifications
+CourseSvc --> Cloudinary : File Storage
+Upload --> FileSystem : Temporary Storage
+Logger --> LogFiles : Log Storage
+
+' Configuration
+Config --> Server : Environment Variables
+Config --> MongoDB : Database Config
+Config --> Razorpay : Payment Config
+Config --> Cloudinary : CDN Config
+Config --> EmailService : Email Config
+
+note right of Server
+  Express.js Application
+  - Port: 3000 (default)
+  - Environment: Production/Development
+  - CORS enabled for multiple domains
+end note
+
+note right of MongoDB
+  Primary Database
+  - Document-based storage
+  - Mongoose ODM
+  - Connection pooling
+end note
+
+note right of Razorpay
+  Payment Gateway
+  - Subscription management
+  - Payment verification
+  - Refund processing
+end note
+
+note right of Cloudinary
+  File Storage
+  - Image/video uploads
+  - CDN distribution
+  - Auto-optimization
+end note
+
+@enduml
+

@@ -1,0 +1,138 @@
+@startuml ER Diagram
+
+!theme plain
+title Learning Management System - Entity Relationship Diagram
+
+entity "User" as User {
+  * _id : ObjectId <<PK>>
+  --
+  * fullName : String (3-30 chars)
+  * email : String (unique, lowercase)
+  * password : String (hashed, min 6 chars)
+  * role : Enum[USER, ADMIN] (default: USER)
+  --
+  avatar_public_id : String
+  avatar_secure_url : String
+  --
+  forgotPasswordToken : String
+  forgotPasswordExpire : Date
+  --
+  subscription_id : String
+  subscription_status : String
+  --
+  * createdAt : Date
+  * updatedAt : Date
+}
+
+entity "Course" as Course {
+  * _id : ObjectId <<PK>>
+  --
+  * title : String (8-50 chars)
+  * description : String (20-2000 chars)
+  * category : String
+  * createdBy : String (instructor name)
+  --
+  thumbnail_public_id : String
+  thumbnail_secure_url : String
+  --
+  numberOfLectures : Number (default: 0)
+  --
+  * createdAt : Date
+  * updatedAt : Date
+}
+
+entity "Lecture" as Lecture {
+  * _id : ObjectId <<PK>>
+  --
+  title : String
+  description : String
+  --
+  lecture_public_id : String
+  lecture_secure_url : String
+  --
+  * createdAt : Date
+  * updatedAt : Date
+}
+
+entity "Payment" as Payment {
+  * _id : ObjectId <<PK>>
+  --
+  * razorpay_payment_id : String
+  * razorpay_subscription_id : String
+  * razorpay_signature : String
+  --
+  * createdAt : Date
+  * updatedAt : Date
+}
+
+entity "AdminRequest" as AdminRequest {
+  * _id : ObjectId <<PK>>
+  --
+  * user : ObjectId <<FK>>
+  * reason : String (10-500 chars)
+  * experience : String (10-1000 chars)
+  * status : Enum[pending, approved, rejected] (default: pending)
+  --
+  reviewedBy : ObjectId <<FK>>
+  reviewedAt : Date
+  reviewNotes : String (max 500 chars)
+  --
+  * createdAt : Date
+  * updatedAt : Date
+}
+
+' Relationships
+User ||--o{ Payment : "makes"
+User ||--o{ AdminRequest : "requests"
+User ||--o{ Course : "creates"
+
+Course ||--o{ Lecture : "contains"
+
+AdminRequest }o--|| User : "reviewed by"
+
+' Notes for relationships
+note right of User
+  User Entity:
+  - Primary key: _id
+  - Unique email constraint
+  - Password hashing via bcrypt
+  - JWT token generation
+  - Password reset functionality
+  - Subscription management
+end note
+
+note right of Course
+  Course Entity:
+  - Primary key: _id
+  - Embedded lectures array
+  - Thumbnail via Cloudinary
+  - Created by instructor name
+  - Lecture count tracking
+end note
+
+note right of Lecture
+  Lecture Entity:
+  - Embedded in Course
+  - Video files via Cloudinary
+  - Title and description
+  - Auto-generated IDs
+end note
+
+note right of Payment
+  Payment Entity:
+  - Razorpay integration
+  - Payment verification
+  - Subscription tracking
+  - Signature validation
+end note
+
+note right of AdminRequest
+  AdminRequest Entity:
+  - Unique pending request per user
+  - Admin review workflow
+  - Status tracking
+  - Review notes support
+end note
+
+@enduml
+

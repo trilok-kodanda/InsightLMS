@@ -1,0 +1,130 @@
+@startuml Data Relationships
+
+!theme plain
+title Learning Management System - Data Relationships
+
+entity "User" as User {
+  _id : ObjectId
+  fullName : String
+  email : String
+  password : String
+  role : String
+  avatar : Object
+  subscription : Object
+  timestamps : Date
+}
+
+entity "Course" as Course {
+  _id : ObjectId
+  title : String
+  description : String
+  category : String
+  lectures : Array
+  thumbnail : Object
+  createdBy : String
+  timestamps : Date
+}
+
+entity "Lecture" as Lecture {
+  _id : ObjectId
+  title : String
+  description : String
+  lecture : Object
+  timestamps : Date
+}
+
+entity "Payment" as Payment {
+  _id : ObjectId
+  razorpay_payment_id : String
+  razorpay_subscription_id : String
+  razorpay_signature : String
+  timestamps : Date
+}
+
+entity "AdminRequest" as AdminRequest {
+  _id : ObjectId
+  user : ObjectId
+  reason : String
+  experience : String
+  status : String
+  reviewedBy : ObjectId
+  reviewedAt : Date
+  reviewNotes : String
+  timestamps : Date
+}
+
+' Primary Relationships
+User ||--o{ Payment : "1:N\nUser makes multiple payments"
+User ||--o{ AdminRequest : "1:N\nUser can make multiple admin requests"
+User ||--o{ Course : "1:N\nUser creates multiple courses"
+Course ||--o{ Lecture : "1:N\nCourse contains multiple lectures"
+
+' Self-referencing Relationships
+AdminRequest }o--|| User : "N:1\nAdmin reviews admin requests"
+
+' Relationship Details
+User ||--o{ Payment : "Subscription Management"
+note on link : "User subscribes to platform\nPayment tracks subscription details\nOne user can have multiple payments"
+
+User ||--o{ AdminRequest : "Admin Access Request"
+note on link : "User requests admin privileges\nOne user can have multiple requests\nOnly one pending request per user"
+
+User ||--o{ Course : "Course Creation"
+note on link : "User creates courses\nInstructor name stored as string\nOne user can create multiple courses"
+
+Course ||--o{ Lecture : "Lecture Management"
+note on link : "Course contains lectures\nLectures embedded in course document\nOne course can have multiple lectures"
+
+AdminRequest }o--|| User : "Admin Review"
+note on link : "Admin reviews requests\nAdmin user references\nOne admin can review multiple requests"
+
+' Data Flow Annotations
+note top of User
+  User Entity:
+  - Primary entity in the system
+  - Contains authentication data
+  - Manages subscription status
+  - Has role-based permissions
+end note
+
+note top of Course
+  Course Entity:
+  - Contains course content
+  - Embeds lecture documents
+  - Stores media references
+  - Tracks creator information
+end note
+
+note top of Lecture
+  Lecture Entity:
+  - Embedded in Course documents
+  - Contains video content
+  - Auto-generated IDs
+  - Media file references
+end note
+
+note top of Payment
+  Payment Entity:
+  - Razorpay integration
+  - Payment verification
+  - Subscription tracking
+  - Transaction records
+end note
+
+note top of AdminRequest
+  AdminRequest Entity:
+  - Admin privilege requests
+  - Review workflow
+  - Status tracking
+  - Admin reviewer reference
+end note
+
+' Cardinality Annotations
+User ||--o{ Payment : "One User\nMany Payments"
+User ||--o{ AdminRequest : "One User\nMany Requests"
+User ||--o{ Course : "One User\nMany Courses"
+Course ||--o{ Lecture : "One Course\nMany Lectures"
+AdminRequest }o--|| User : "Many Requests\nOne Reviewer"
+
+@enduml
+

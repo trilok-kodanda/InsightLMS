@@ -1,0 +1,54 @@
+@startuml System Administration Use Cases
+
+!theme plain
+title System Administration Use Cases
+
+actor Admin as a
+actor User as u
+actor System as s
+
+package "Contact & Support" {
+    usecase "Contact Us" as UC1
+    usecase "Send Contact Email" as UC2
+}
+
+package "User Analytics" {
+    usecase "View User Statistics" as UC3
+    usecase "View Subscription Analytics" as UC4
+}
+
+package "System Monitoring" {
+    usecase "Debug Authentication" as UC5
+    usecase "Debug Payment Auth" as UC6
+    usecase "Monitor System Health" as UC7
+}
+
+' User connections
+u --> UC1 : Submit contact form with name, email, message
+
+' Admin connections
+a --> UC3 : View total registered users
+a --> UC4 : View active subscribers count
+a --> UC5 : Check authentication cookies/tokens
+a --> UC6 : Verify payment authentication
+a --> UC7 : Monitor system status
+
+' System connections
+s --> UC2 : Send formatted email to admin
+s --> UC7 : Log system events and errors
+
+UC1 .> UC2 : includes
+UC3 .> UC4 : includes
+
+note right of UC1
+  Sends HTML formatted email
+  Includes user contact details
+end note
+
+note right of UC5
+  Debug endpoint for auth issues
+  Shows cookie and header info
+end note
+
+@enduml
+

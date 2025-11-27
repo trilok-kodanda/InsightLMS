@@ -1,0 +1,78 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.5 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36" version="28.2.5">
+  <diagram name="Page-1" id="6d9HAPdG7QmRR2O4AZTR">
+    <mxGraphModel dx="1426" dy="841" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="YMaRB0agQIxw3yo5I9UF-1" value="Admin" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" vertex="1" parent="1">
+          <mxGeometry x="230" y="300" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="YMaRB0agQIxw3yo5I9UF-2" value="Create Course" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="590" y="170" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="YMaRB0agQIxw3yo5I9UF-3" value="Update Course" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="270" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="YMaRB0agQIxw3yo5I9UF-4" value="Delete Course" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="370" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="YMaRB0agQIxw3yo5I9UF-5" value="" style="endArrow=open;endFill=1;endSize=12;html=1;rounded=0;entryX=0.05;entryY=0.386;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" target="YMaRB0agQIxw3yo5I9UF-2">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="250" y="330" as="sourcePoint" />
+            <mxPoint x="410" y="320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="YMaRB0agQIxw3yo5I9UF-6" value="" style="endArrow=open;endFill=1;endSize=12;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="YMaRB0agQIxw3yo5I9UF-3">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="260" y="330" as="sourcePoint" />
+            <mxPoint x="590" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="YMaRB0agQIxw3yo5I9UF-7" value="" style="endArrow=open;endFill=1;endSize=12;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="YMaRB0agQIxw3yo5I9UF-4">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="250" y="330" as="sourcePoint" />
+            <mxPoint x="600" y="316" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="260" y="330" />
+              <mxPoint x="250" y="330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="YMaRB0agQIxw3yo5I9UF-14" value="Users" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" vertex="1" parent="1">
+          <mxGeometry x="230" y="650" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="YMaRB0agQIxw3yo5I9UF-15" value="Browse Course&amp;nbsp;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="590" y="520" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="YMaRB0agQIxw3yo5I9UF-16" value="View Course Details" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="620" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="YMaRB0agQIxw3yo5I9UF-17" value="Subscribe to Course" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="720" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="YMaRB0agQIxw3yo5I9UF-18" value="" style="endArrow=open;endFill=1;endSize=12;html=1;rounded=0;entryX=0.05;entryY=0.386;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" target="YMaRB0agQIxw3yo5I9UF-15">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="250" y="680" as="sourcePoint" />
+            <mxPoint x="410" y="670" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="YMaRB0agQIxw3yo5I9UF-19" value="" style="endArrow=open;endFill=1;endSize=12;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="YMaRB0agQIxw3yo5I9UF-16">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="260" y="680" as="sourcePoint" />
+            <mxPoint x="590" y="560" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="YMaRB0agQIxw3yo5I9UF-20" value="" style="endArrow=open;endFill=1;endSize=12;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="YMaRB0agQIxw3yo5I9UF-17">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="250" y="680" as="sourcePoint" />
+            <mxPoint x="600" y="666" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="260" y="680" />
+              <mxPoint x="250" y="680" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

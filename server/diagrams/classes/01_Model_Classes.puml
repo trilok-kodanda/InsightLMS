@@ -1,0 +1,147 @@
+@startuml Model Classes
+
+!theme plain
+title Learning Management System - Model Classes
+
+class User {
+  - _id: ObjectId
+  - fullName: String
+  - email: String
+  - password: String
+  - role: String
+  - avatar: Object
+  - forgotPasswordToken: String
+  - forgotPasswordExpire: Date
+  - subscription: Object
+  - createdAt: Date
+  - updatedAt: Date
+  --
+  + comparePassword(plainTextPassword): Promise<Boolean>
+  + generateJWTToken(): Promise<String>
+  + generatePasswordResetToken(): Promise<String>
+  --
+  + validateEmail(): Boolean
+  + validatePassword(): Boolean
+  + hashPassword(): Promise<Void>
+}
+
+class Course {
+  - _id: ObjectId
+  - title: String
+  - description: String
+  - category: String
+  - lectures: Array<Lecture>
+  - thumbnail: Object
+  - numberOfLectures: Number
+  - createdBy: String
+  - createdAt: Date
+  - updatedAt: Date
+  --
+  + addLecture(lectureData): Course
+  + removeLecture(lectureId): Course
+  + updateLecture(lectureId, lectureData): Course
+  + updateNumberOfLectures(): Void
+  + validateTitle(): Boolean
+  + validateDescription(): Boolean
+}
+
+class Lecture {
+  - _id: ObjectId
+  - title: String
+  - description: String
+  - lecture: Object
+  - createdAt: Date
+  - updatedAt: Date
+  --
+  + updateTitle(title): Void
+  + updateDescription(description): Void
+  + updateVideo(videoData): Void
+  + getVideoUrl(): String
+  + getPublicId(): String
+}
+
+class Payment {
+  - _id: ObjectId
+  - razorpay_payment_id: String
+  - razorpay_subscription_id: String
+  - razorpay_signature: String
+  - createdAt: Date
+  - updatedAt: Date
+  --
+  + validateSignature(): Boolean
+  + getPaymentId(): String
+  + getSubscriptionId(): String
+  + getSignature(): String
+}
+
+class AdminRequest {
+  - _id: ObjectId
+  - user: ObjectId
+  - reason: String
+  - experience: String
+  - status: String
+  - reviewedBy: ObjectId
+  - reviewedAt: Date
+  - reviewNotes: String
+  - createdAt: Date
+  - updatedAt: Date
+  --
+  + approve(adminId, notes): Void
+  + reject(adminId, notes): Void
+  + isPending(): Boolean
+  + isApproved(): Boolean
+  + isRejected(): Boolean
+  + validateReason(): Boolean
+  + validateExperience(): Boolean
+}
+
+' Relationships
+User ||--o{ Payment : "makes"
+User ||--o{ AdminRequest : "requests"
+User ||--o{ Course : "creates"
+Course ||--o{ Lecture : "contains"
+AdminRequest }o--|| User : "reviewed by"
+
+note right of User
+  User Model:
+  - Password hashing with bcrypt
+  - JWT token generation
+  - Password reset functionality
+  - Subscription management
+  - Role-based access control
+end note
+
+note right of Course
+  Course Model:
+  - Embedded lecture documents
+  - Thumbnail and video storage
+  - Category-based organization
+  - Instructor tracking
+  - Lecture count automation
+end note
+
+note right of Lecture
+  Lecture Model:
+  - Embedded in Course documents
+  - Video file management
+  - Auto-generated IDs
+  - Media file references
+end note
+
+note right of Payment
+  Payment Model:
+  - Razorpay integration
+  - Payment verification
+  - Subscription tracking
+  - Signature validation
+end note
+
+note right of AdminRequest
+  AdminRequest Model:
+  - Admin privilege requests
+  - Review workflow
+  - Status tracking
+  - Admin reviewer reference
+end note
+
+@enduml

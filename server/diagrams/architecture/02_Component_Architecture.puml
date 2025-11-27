@@ -1,0 +1,174 @@
+@startuml Component Architecture
+
+!theme plain
+title Learning Management System - Component Architecture
+
+package "Frontend Applications" {
+    [React Web App] as WebApp
+    [Admin Dashboard] as AdminApp
+    [Mobile Application] as MobileApp
+}
+
+package "API Layer" {
+    [Express.js REST API] as API
+    [Authentication Service] as AuthService
+    [File Upload Service] as FileService
+    [Error Handling Service] as ErrorService
+}
+
+package "Business Logic Components" {
+    package "User Management Component" {
+        [User Registration] as UserReg
+        [User Authentication] as UserAuth
+        [Profile Management] as ProfileMgmt
+        [Admin Request Handler] as AdminReq
+    }
+    
+    package "Course Management Component" {
+        [Course CRUD Operations] as CourseCRUD
+        [Lecture Management] as LectureMgmt
+        [Content Access Control] as AccessControl
+        [Media Management] as MediaMgmt
+    }
+    
+    package "Payment Component" {
+        [Subscription Management] as SubMgmt
+        [Payment Processing] as PaymentProc
+        [Refund Management] as RefundMgmt
+        [Payment Analytics] as PaymentAnalytics
+    }
+    
+    package "Administration Component" {
+        [User Administration] as UserAdmin
+        [System Monitoring] as SysMonitor
+        [Contact Management] as ContactMgmt
+        [Analytics & Reporting] as Analytics
+    }
+}
+
+package "Data Layer Components" {
+    [Database Connection Pool] as DBPool
+    [User Data Access Object] as UserDAO
+    [Course Data Access Object] as CourseDAO
+    [Payment Data Access Object] as PaymentDAO
+    [Admin Request Data Access Object] as AdminDAO
+}
+
+package "External Service Components" {
+    [MongoDB Database] as MongoDB
+    [Cloudinary Storage] as Cloudinary
+    [Razorpay Gateway] as Razorpay
+    [Email Service Component] as EmailService
+    [File System Component] as FileSystem
+}
+
+package "Infrastructure Components" {
+    [Configuration Manager] as ConfigMgr
+    [Logger Component] as Logger
+    [Security Component] as Security
+    [Validation Component] as Validation
+}
+
+' Frontend to API
+WebApp --> API : HTTP/HTTPS
+AdminApp --> API : HTTP/HTTPS
+MobileApp --> API : HTTP/HTTPS
+
+' API Layer Dependencies
+API --> AuthService : Authentication
+API --> FileService : File Handling
+API --> ErrorService : Error Management
+
+' Business Logic Dependencies
+API --> UserReg : User Operations
+API --> UserAuth : Authentication
+API --> ProfileMgmt : Profile Operations
+API --> AdminReq : Admin Requests
+
+API --> CourseCRUD : Course Operations
+API --> LectureMgmt : Lecture Operations
+API --> AccessControl : Access Control
+API --> MediaMgmt : Media Operations
+
+API --> SubMgmt : Subscription Operations
+API --> PaymentProc : Payment Operations
+API --> RefundMgmt : Refund Operations
+API --> PaymentAnalytics : Payment Reports
+
+API --> UserAdmin : User Administration
+API --> SysMonitor : System Monitoring
+API --> ContactMgmt : Contact Operations
+API --> Analytics : Analytics & Reports
+
+' Data Layer Dependencies
+UserReg --> UserDAO : Data Operations
+UserAuth --> UserDAO : Data Operations
+ProfileMgmt --> UserDAO : Data Operations
+AdminReq --> AdminDAO : Data Operations
+
+CourseCRUD --> CourseDAO : Data Operations
+LectureMgmt --> CourseDAO : Data Operations
+MediaMgmt --> CourseDAO : Data Operations
+
+SubMgmt --> PaymentDAO : Data Operations
+PaymentProc --> PaymentDAO : Data Operations
+RefundMgmt --> PaymentDAO : Data Operations
+
+' Data Access to Database
+UserDAO --> DBPool : Connection
+CourseDAO --> DBPool : Connection
+PaymentDAO --> DBPool : Connection
+AdminDAO --> DBPool : Connection
+DBPool --> MongoDB : Database
+
+' External Service Dependencies
+MediaMgmt --> Cloudinary : File Storage
+PaymentProc --> Razorpay : Payment Gateway
+RefundMgmt --> Razorpay : Refund Processing
+ContactMgmt --> EmailService : Email Notifications
+UserAuth --> EmailService : Password Reset
+FileService --> FileSystem : Temporary Storage
+
+' Infrastructure Dependencies
+API --> ConfigMgr : Configuration
+API --> Logger : Logging
+API --> Security : Security
+API --> Validation : Input Validation
+
+Security --> AuthService : Token Validation
+Logger --> ErrorService : Error Logging
+
+note right of API
+  Express.js Application
+  - RESTful API Design
+  - Middleware Stack
+  - CORS Configuration
+  - Port: 3000
+end note
+
+note right of MongoDB
+  Primary Database
+  - Document Storage
+  - Mongoose ODM
+  - Connection Pooling
+  - Indexing
+end note
+
+note right of Razorpay
+  Payment Integration
+  - Subscription Management
+  - Payment Verification
+  - Webhook Handling
+  - Refund Processing
+end note
+
+note right of Cloudinary
+  File Storage & CDN
+  - Image/Video Upload
+  - Auto-optimization
+  - CDN Distribution
+  - Transformations
+end note
+
+@enduml
+

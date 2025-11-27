@@ -1,0 +1,208 @@
+@startuml Deployment Architecture
+
+!theme plain
+title Learning Management System - Deployment Architecture
+
+package "Client Layer" {
+    [Web Browser] as Browser
+    [Mobile App] as Mobile
+    [Admin Dashboard] as AdminUI
+}
+
+package "CDN & Load Balancing" {
+    [Cloudflare CDN] as CDN
+    [Load Balancer] as LB
+    [SSL Termination] as SSL
+}
+
+package "Application Layer" {
+    node "Production Server 1" {
+        [Node.js Application] as App1
+        [Express.js Server] as Server1
+        [PM2 Process Manager] as PM2_1
+    }
+    
+    node "Production Server 2" {
+        [Node.js Application] as App2
+        [Express.js Server] as Server2
+        [PM2 Process Manager] as PM2_2
+    }
+    
+    node "Staging Server" {
+        [Node.js Application] as StagingApp
+        [Express.js Server] as StagingServer
+        [PM2 Process Manager] as PM2_Staging
+    }
+}
+
+package "Database Layer" {
+    database "MongoDB Atlas Cluster" {
+        [Primary Database] as PrimaryDB
+        [Secondary Database] as SecondaryDB
+        [Backup Database] as BackupDB
+    }
+    
+    [MongoDB Connection Pool] as DBPool
+    [Database Replication] as DBReplication
+}
+
+package "External Services" {
+    cloud "Cloudinary" {
+        [Image CDN] as ImageCDN
+        [Video Storage] as VideoStorage
+        [File Processing] as FileProcessing
+    }
+    
+    cloud "Razorpay" {
+        [Payment Gateway] as PaymentGW
+        [Webhook Service] as WebhookSvc
+        [Refund Service] as RefundSvc
+    }
+    
+    cloud "Email Service" {
+        [SMTP Server] as SMTPServer
+        [Email Templates] as EmailTemplates
+        [Delivery Tracking] as EmailTracking
+    }
+}
+
+package "Monitoring & Logging" {
+    [Application Logs] as AppLogs
+    [Error Logs] as ErrorLogs
+    [Access Logs] as AccessLogs
+    [Performance Monitoring] as PerfMonitor
+    [Health Checks] as HealthCheck
+}
+
+package "Backup & Recovery" {
+    [Database Backups] as DBBackup
+    [File Backups] as FileBackup
+    [Configuration Backups] as ConfigBackup
+    [Disaster Recovery] as DisasterRecovery
+}
+
+package "Development Environment" {
+    [Local Development] as LocalDev
+    [Git Repository] as GitRepo
+    [CI/CD Pipeline] as CICD
+    [Testing Environment] as TestEnv
+}
+
+' Client to CDN
+Browser --> CDN : HTTPS Request
+Mobile --> CDN : HTTPS Request
+AdminUI --> CDN : HTTPS Request
+
+' CDN to Load Balancer
+CDN --> LB : Load Balanced Request
+LB --> SSL : SSL Termination
+
+' Load Balancer to Application Servers
+SSL --> App1 : HTTP Request
+SSL --> App2 : HTTP Request
+SSL --> StagingApp : HTTP Request (Staging)
+
+' Application Server Components
+App1 --> Server1 : Process Request
+Server1 --> PM2_1 : Process Management
+App2 --> Server2 : Process Request
+Server2 --> PM2_2 : Process Management
+StagingApp --> StagingServer : Process Request
+StagingServer --> PM2_Staging : Process Management
+
+' Application to Database
+Server1 --> DBPool : Database Connection
+Server2 --> DBPool : Database Connection
+StagingServer --> DBPool : Database Connection
+DBPool --> PrimaryDB : Primary Operations
+DBPool --> SecondaryDB : Read Operations
+PrimaryDB --> DBReplication : Data Replication
+DBReplication --> SecondaryDB : Sync Data
+DBReplication --> BackupDB : Backup Data
+
+' External Service Integration
+Server1 --> ImageCDN : File Upload/Retrieval
+Server2 --> ImageCDN : File Upload/Retrieval
+ImageCDN --> VideoStorage : Video Storage
+VideoStorage --> FileProcessing : Media Processing
+
+Server1 --> PaymentGW : Payment Processing
+Server2 --> PaymentGW : Payment Processing
+PaymentGW --> WebhookSvc : Webhook Notifications
+PaymentGW --> RefundSvc : Refund Processing
+
+Server1 --> SMTPServer : Email Sending
+Server2 --> SMTPServer : Email Sending
+SMTPServer --> EmailTemplates : Template Processing
+EmailTemplates --> EmailTracking : Delivery Tracking
+
+' Monitoring Integration
+Server1 --> AppLogs : Application Logging
+Server2 --> AppLogs : Application Logging
+Server1 --> ErrorLogs : Error Logging
+Server2 --> ErrorLogs : Error Logging
+Server1 --> AccessLogs : Access Logging
+Server2 --> AccessLogs : Access Logging
+Server1 --> PerfMonitor : Performance Metrics
+Server2 --> PerfMonitor : Performance Metrics
+LB --> HealthCheck : Health Monitoring
+
+' Backup Integration
+PrimaryDB --> DBBackup : Database Backup
+ImageCDN --> FileBackup : File Backup
+Server1 --> ConfigBackup : Configuration Backup
+Server2 --> ConfigBackup : Configuration Backup
+DBBackup --> DisasterRecovery : Recovery Planning
+FileBackup --> DisasterRecovery : Recovery Planning
+ConfigBackup --> DisasterRecovery : Recovery Planning
+
+' Development to Production
+LocalDev --> GitRepo : Code Commit
+GitRepo --> CICD : CI/CD Pipeline
+CICD --> TestEnv : Testing
+TestEnv --> StagingApp : Staging Deployment
+StagingApp --> App1 : Production Deployment
+StagingApp --> App2 : Production Deployment
+
+note right of LB
+  Load Balancer Configuration:
+  - Round Robin Algorithm
+  - Health Check Monitoring
+  - SSL Termination
+  - Session Persistence
+end note
+
+note right of PrimaryDB
+  MongoDB Atlas Configuration:
+  - Primary Replica Set
+  - Auto-scaling Enabled
+  - Backup Enabled
+  - Monitoring Active
+end note
+
+note right of PM2_1
+  Process Management:
+  - Auto-restart on Crash
+  - Load Balancing
+  - Memory Monitoring
+  - Log Rotation
+end note
+
+note right of CDN
+  CDN Configuration:
+  - Global Edge Locations
+  - Cache Optimization
+  - SSL Certificate
+  - DDoS Protection
+end note
+
+note right of CICD
+  CI/CD Pipeline:
+  - Automated Testing
+  - Code Quality Checks
+  - Security Scanning
+  - Automated Deployment
+end note
+
+@enduml
+

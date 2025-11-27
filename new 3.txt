@@ -1,0 +1,32 @@
+github.com/daemonX10/Learning-Management-System.git
+
+github
+trilok.kodanda@gmail.com
+
+CLOUDINARY_CLOUD_NAME = 'dcx9lymow'
+CLOUDINARY_API_KEY = '585789167132313'
+CLOUDINARY_API_SECRET = 'hJ6bTHLS3ciUEK7XNCh3WwBTGxg'
+
+cloudinary
+trilok.kodanda@gmail.com 
+
+
+# devendra-real-account
+RAZORPAY_KEY_ID = 'rzp_test_3jhn9orphVML4G'
+RAZORPAY_PLAN_ID = 'plan_NerIjzY6yreEIq'
+RAZORPAY_SECRET = 'rxkq5FRjvQ23tua7yyUwg6NO'
+
+# damodar-dummy-account
+# RAZORPAY_KEY_ID = 'rzp_test_YmsEHldoxL82Y5'
+# RAZORPAY_SECRET = 'gDkomxjReA9PDp89A5TybWuK'
+# RAZORPAY_PLAN_ID = 'p11link_NcS6mkM4p6vgqb'
+
+
+curl --location 'http://localhost:5000/api/v1/user/register' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjJhNDJlYmEzMTRmMGU1YjY2OTRmMSIsInJvbGUiOiJVU0VSIiwic3Vic2NyaXB0aW9uIjp7fSwiaWF0IjoxNzYzODc3OTM1LCJleHAiOjE3NjQ0ODI3MzV9.kyLABxRfE10WNEJTHhyuCPKzdcy3N80-XK-B2oa5liw' \
+--data-raw '{
+    "fullName": "lmsuser",
+    "email": "user@lms.com",
+    "password": "user@123"
+  }'

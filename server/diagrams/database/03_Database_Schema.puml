@@ -1,0 +1,148 @@
+@startuml Database Schema
+
+!theme plain
+title Learning Management System - Database Schema
+
+package "MongoDB Collections" {
+
+class "User Collection" {
+  _id: ObjectId (Primary Key)
+  fullName: String (required, 3-30 chars)
+  email: String (required, unique, lowercase)
+  password: String (required, hashed, min 6 chars)
+  role: String (enum: USER, ADMIN, default: USER)
+  avatar: {
+    public_id: String
+    secure_url: String
+  }
+  forgotPasswordToken: String
+  forgotPasswordExpire: Date
+  subscription: {
+    id: String
+    status: String
+  }
+  createdAt: Date
+  updatedAt: Date
+  --
+  Methods:
+  + comparePassword(plainText)
+  + generateJWTToken()
+  + generatePasswordResetToken()
+  --
+  Indexes:
+  - email (unique)
+  - createdAt
+}
+
+class "Course Collection" {
+  _id: ObjectId (Primary Key)
+  title: String (required, 8-50 chars)
+  description: String (required, 20-2000 chars)
+  category: String (required)
+  lectures: [{
+    _id: ObjectId (auto-generated)
+    title: String
+    description: String
+    lecture: {
+      public_id: String (required)
+      secure_url: String (required)
+    }
+  }]
+  thumbnail: {
+    public_id: String
+    secure_url: String
+  }
+  numberOfLectures: Number (default: 0)
+  createdBy: String (required, instructor name)
+  createdAt: Date
+  updatedAt: Date
+  --
+  Indexes:
+  - title (text)
+  - category
+  - createdBy
+  - createdAt
+}
+
+class "Payment Collection" {
+  _id: ObjectId (Primary Key)
+  razorpay_payment_id: String (required)
+  razorpay_subscription_id: String (required)
+  razorpay_signature: String (required)
+  createdAt: Date
+  updatedAt: Date
+  --
+  Indexes:
+  - razorpay_payment_id (unique)
+  - razorpay_subscription_id
+  - createdAt
+}
+
+class "AdminRequest Collection" {
+  _id: ObjectId (Primary Key)
+  user: ObjectId (required, ref: User)
+  reason: String (required, 10-500 chars)
+  experience: String (required, 10-1000 chars)
+  status: String (enum: pending, approved, rejected, default: pending)
+  reviewedBy: ObjectId (ref: User)
+  reviewedAt: Date
+  reviewNotes: String (max 500 chars)
+  createdAt: Date
+  updatedAt: Date
+  --
+  Indexes:
+  - user (unique, partial: status=pending)
+  - status
+  - reviewedBy
+  - createdAt
+}
+
+}
+
+' Relationships
+User ||--o{ Payment : "makes payments"
+User ||--o{ AdminRequest : "requests admin access"
+User ||--o{ Course : "creates courses"
+Course ||--o{ Lecture : "contains lectures"
+AdminRequest }o--|| User : "reviewed by admin"
+
+note top of User
+  User Collection Features:
+  - Password hashing with bcrypt
+  - JWT token generation
+  - Password reset functionality
+  - Subscription management
+  - Role-based access control
+  - Avatar upload support
+end note
+
+note top of Course
+  Course Collection Features:
+  - Embedded lecture documents
+  - Thumbnail and video storage
+  - Category-based organization
+  - Instructor tracking
+  - Lecture count automation
+  - Text search capabilities
+end note
+
+note top of Payment
+  Payment Collection Features:
+  - Razorpay integration
+  - Payment verification
+  - Subscription tracking
+  - Signature validation
+  - Transaction history
+end note
+
+note top of AdminRequest
+  AdminRequest Collection Features:
+  - Unique pending requests per user
+  - Admin review workflow
+  - Status tracking
+  - Review notes
+  - Timestamp tracking
+end note
+
+@enduml
+
