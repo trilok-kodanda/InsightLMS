@@ -1,4 +1,4 @@
-# Learning Management System (LMS) - Full Stack Web Development Project
+# InsightLMS: Learning Management System
 
 
 ## Overview
@@ -30,7 +30,7 @@ This repository contains the source code for a Learning Management System (LMS) 
 
 To get started with the project, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/daemonX10/Learning-Management-System.git`
+1. Clone the repository: `git clone https://github.com/trilok-kodanda/InsightLMS`
 
 2. Navigate to the project directory:
 - `cd path/to/client`
@@ -42,15 +42,10 @@ To get started with the project, follow these steps:
 
 For detailed instructions on setup and configuration, refer to the [Installation Guide](docs/installation.md).
 
-## Contributing
-
-We welcome contributions from the community! If you'd like to contribute to the project, please follow our [Contribution Guidelines](CONTRIBUTING.md).
 
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
 
-## Contact
 
-For inquiries or support, please contact [ Damodar Yadav ] at [damodarryadav@gmail.com].
 
